@@ -7,9 +7,12 @@
 	</head>
 
 	<body style="text-align: center;">
+        <!-- <audio loop id="theme">
+            <source src="../assets/sound/PacManTheme.mp3" type="audio/mpeg">
+        </audio> -->
 		<div id="welcomePage">
             <img src="../assets/img/Logo.png" alt=""/>
-            <div id="welcomeButtons" style="display: block;">
+            <div id="welcomeButtons">
                 <button id="start">Start</button>
                 <button id="signup">Signup</button>
             </div>
@@ -20,10 +23,16 @@
             <button id="login">Login</button>
         </div>
         <div id="signupPage">
-            <form>
+            <form id="form">
                 <h1>Sign Up</h1>
                 <p>Please fill the form in order to Sign Up.</p>
+                <input id="userSignup" name="userSignup" class="submitInput1" type="text" placeholder="User Name">
+                <input id="passwordSubmit" class="submitInput1" type="password" placeholder="Password">
+                <input id="nameSignup" class="submitInput1" type="text" placeholder="Full Name">
+                <input id="emailSignup" class="submitInput1" type="email" placeholder="email address">
+                <input id="dateSignup" class="submitInput1" type="date" placeholder="Pick your Date" min="1950-01-01" max="2021-01-01">
             </form>
+            <button id="register">Register</button>
         </div>
 	</body>
 </html>
