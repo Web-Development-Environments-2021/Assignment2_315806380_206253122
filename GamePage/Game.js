@@ -18,6 +18,8 @@ $(document).ready(function() {
 
 function Start() {
 	board = new Array();
+	score = 0;
+	start_time = new Date();
 	pac_color = "yellow";
 	for (let i = 0; i < 30; i++) {
 		board[i] = new Array();
@@ -52,11 +54,15 @@ function Start() {
 			}
 		}
 	}
-	let pac_food = 50;
-	while (pac_food > 0) {
+	board[13][7] = 10;
+	let pac_food = [30, 15, 5];
+	while (pac_food.reduce((a, b) => a + b) > 0) {
 		let emptyCell = findRandomEmptyCell(board);
-		board[emptyCell[0]][emptyCell[1]] = 1;
-		pac_food--;
+		let random = Math.floor(Math.random(4) * 10);
+		if (pac_food[random] > 0){
+			board[emptyCell[0]][emptyCell[1]] = 5 + random;
+			pac_food[random]--;
+		}
 	}
 
 	document.addEventListener('keyup', (e) => {
@@ -104,14 +110,33 @@ function Draw() {
 				context.arc(center.x + 5, center.y - 15, 5, 0, 2 * Math.PI); // circle
 				context.fillStyle = "black"; //color
 				context.fill();
-			} else if (board[i][j] == 1) {
+			} else if (board[i][j] == 5) {
 				context.beginPath();
-				context.arc(center.x, center.y, 15, 0, 2 * Math.PI); // circle
-				context.fillStyle = "black"; //color
-				context.fill();
+				context.fillRect(center.x - 30, center.y - 30, 60, 60);
+				let img = new Image();
+				img.src = "..//assets//img//food3.png"; //transparent png
+				context.drawImage(img, center.x - 30, center.y - 30, 60, 60)
+			}else if (board[i][j] == 6) {
+				context.beginPath();
+				context.fillRect(center.x - 30, center.y - 30, 60, 60);
+				let img = new Image();
+				img.src = "..//assets//img//food4.png"; //transparent png
+				context.drawImage(img, center.x - 30, center.y - 30, 60, 60)
+			}else if (board[i][j] == 7) {
+				context.beginPath();
+				context.fillRect(center.x - 30, center.y - 30, 60, 60);
+				let img = new Image();
+				img.src = "..//assets//img//food5.png"; //transparent png
+				context.drawImage(img, center.x - 30, center.y - 30, 60, 60)
 			} else if (board[i][j] == 4) {
 				context.beginPath();
 				let img = document.getElementById("block");
+				context.drawImage(img, center.x - 30, center.y - 30, 60, 60)
+			} else if (board[i][j] == 10) {
+				context.beginPath();
+				context.fillRect(center.x - 30, center.y - 30, 60, 60);
+				let img = new Image();
+				img.src = "..//assets//img//ghost1.png"; //transparent png
 				context.drawImage(img, center.x - 30, center.y - 30, 60, 60)
 			}
 		}
@@ -122,26 +147,38 @@ function UpdatePosition() {
 	board[shape.i][shape.j] = 0;
 	if (keyPressed == 1) {
 		if (shape.j > 0 && board[shape.i][shape.j - 1] != 4) {
-			shape.j--;
+			if (!checkEaten(0, -1)){
+				shape.j--;
+			}
 		}
 	}
 	if (keyPressed == 2) {
 		if (shape.j < 14 && board[shape.i][shape.j + 1] != 4) {
-			shape.j++;
+			if (!checkEaten(0, 1)){
+				shape.j++;
+			}
 		}
 	}
 	if (keyPressed == 3) {
 		if (shape.i > 0 && board[shape.i - 1][shape.j] != 4) {
-			shape.i--;
+			if (!checkEaten(-1, 0)){
+				shape.i--;
+			}
 		}
 	}
 	if (keyPressed == 4) {
 		if (shape.i < 29 && board[shape.i + 1][shape.j] != 4) {
-			shape.i++;
+			if (!checkEaten(1, 0)){
+				shape.i++;
+			}
 		}
 	}
-	if (board[shape.i][shape.j] == 1) {
+	if (board[shape.i][shape.j] == 5) {
 		score++;
+	} else if (board[shape.i][shape.j] == 6) {
+		score += 2;
+	} else if (board[shape.i][shape.j] == 7) {
+		score += 10;
 	}
 	board[shape.i][shape.j] = 2;
 	var currentTime = new Date();
@@ -149,10 +186,21 @@ function UpdatePosition() {
 	if (score >= 20 && time_elapsed <= 10) {
 		pac_color = "green";
 	}
-	if (score == 50) {
+	if (score >= 100) {
 		window.clearInterval(interval);
 		window.alert("Game completed");
 	} else {
 		Draw();
 	}
+}
+
+function checkEaten(x, y) {
+	if (board[shape.i + x][shape.j + y] == 10) {
+		window.alert("You got eaten !");
+		score -= 20;
+		shape.i = 13;
+		shape.j = 13;
+		return true;
+	}
+	return false;
 }
