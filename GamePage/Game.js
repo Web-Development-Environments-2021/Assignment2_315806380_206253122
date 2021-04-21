@@ -1,33 +1,84 @@
+// Settings
+// Game Keys
+var upKey = "ArrowUp";
+var downKey = "ArrowDown";
+var leftKey = "ArrowLeft";
+var rightKey = "ArrowRight";
+var summonKey = "KeyP";
+var foodAmount;
+var fruit5 = "";
+var fruit15 = "";
+var fruit25 = "";
+var timeLimit = 180;
+
+
+
+
+// Game
 var context;
 var board;
-var score;
+var score = 0;
 var pac_color;
 var start_time;
 var time_elapsed;
 
 //intervals
 var interval;
-var intervalP;
-var intervalG1;
-
+var intervalTime;
 
 // Players
-var pacman = new Object();
-var ghost1 = new Object();
-ghost1.i = 13;
-ghost1.j = 7;
-var pikachu = new Object();
+class Pacman {
+	constructor(){
+		this.x;
+		this.y;
+		this.color = "yellow";
+	}
+}
+var pacman;
+
+class Ghost {
+	constructor(){
+		this.starterX;
+		this.starterY;
+		this.x;
+		this.y;
+		this.prevuisGhost = 0;
+	}
+}
+
+function isGhost(x, y){
+	for(let i=0; i<ghosts.length; i++){
+		if (ghosts[i].x == x && ghosts[i].y == y){
+			return true;
+		}
+	}
+	return false;
+}
+var ghosts = [];
+
+class Pikachu {
+	constructor(){
+		this.x;
+		this.y;
+		this.prevuisPikachu = 0;
+	}
+}
+var pikachu;
 
 // Walls
-var walls = [[11, 5], [11, 6], [11, 7], [11, 8], [12, 5], [12, 8], [13, 8], [14, 8], [15, 5], [15, 8], 
-	[16, 5], [16, 6], [16, 7], [16, 8], [0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7],
-	[0, 8], [0, 9], [0, 10], [0, 11], [0, 12], [0, 13], [0, 14], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0],
-	[6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0], [17, 0],
-	[18, 0], [19, 0], [20, 0], [21, 0], [22, 0], [23, 0], [24, 0], [25, 0], [26, 0], [27, 0], [28, 0], [29, 0],
-	[1, 14], [2, 14], [3, 14], [4, 14], [5, 14], [6, 14], [7, 14], [8, 14], [9, 14], [10, 14], [11, 14], [12, 14],
-	[13, 14], [14, 14], [15, 14], [16, 14], [17, 14], [18, 14], [19, 14], [20, 14], [21, 14], [22, 14], [23, 14],
-	[24, 14], [25, 14], [26, 14], [27, 14], [28, 14], [29, 14], [29, 1], [29, 2], [29, 3], [29, 4], [29, 5], 
-	[29, 6], [29, 7], [29, 8], [29, 9], [29, 10], [29, 11], [29, 12], [29, 13], [29, 14]];
+var walls = [[13, 7], [13, 8], [13, 9], [14, 9], [15, 7], [15, 8], [15, 9], [0, 0], [0, 1], [0, 2], [0, 3], [0, 4],
+	[0, 5], [0, 6], [0, 7],	[0, 8], [0, 9], [0, 10], [0, 11], [0, 12], [0, 13], [0, 14], [0, 15], [0, 16], [0, 17], 
+	[0, 18], [0, 19], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], 
+	[13, 0], [14, 0], [15, 0], [16, 0], [17, 0], [18, 0], [19, 0], [20, 0], [21, 0], [22, 0], [23, 0], [24, 0], [25, 0],
+	[26, 0], [27, 0], [28, 0], [29, 0], [1, 19], [2, 19], [3, 19], [4, 19], [5, 19], [6, 19], [7, 19], [8, 19],
+	[9, 19], [10, 19], [11, 19], [12, 19], [13, 19], [14, 19], [15, 19], [16, 19], [17, 19], [18, 19], [19, 19],
+	[20, 19], [21, 19], [22, 19], [23, 19], [24, 19], [25, 19], [26, 19], [27, 19], [28, 19], [29, 19], [29, 1],
+	[29, 2], [29, 3], [29, 4], [29, 5],  [29, 6], [29, 7], [29, 8], [29, 9], [29, 10], [29, 11], [29, 12], [29, 13],
+	[29, 14], [29, 15], [29, 16], [29, 17], [29, 18], [29, 19]];
+
+// for(let w=0; w<30; w++){
+// 	walls.push([w, 0]);
+// }
 
 function isWall(i, j) {
 	for (let k=0; k<walls.length; k++){
@@ -43,40 +94,114 @@ var keyPressed = 5;
 var spawnTime;
 var ownPokeball = false;
 var summoned = false;
+var direction = [0.15, 1.85, 2, -10];
 
-//Previus
-var prevuisGhost1 = 0;
-var prevuisPikachu = 0;
-
+// Start game
 $(document).ready(function() {
 	context = canvas.getContext("2d");
-	Start();
 });
 
-
 function Start() {
-	board = new Array();
-	score = 0;
+
+	if (!foodCheck()){
+		return;
+	}
+
+	document.getElementById("settingsPage").style.display = 'none';
+	document.getElementById("gamePage").style.display = 'block';
+
 	start_time = new Date();
-	spawnTime = start_time;
-	pac_color = "yellow";
+	timeLimit = document.getElementById("timeSlider").value;
+
+	initailBoard();
+	initialGhosts();
+	initailPacman();
+	initialFood();
+	initailExtra();
+
+	
+
+	document.addEventListener('keyup', (e) => {
+		if (e.code === upKey) {
+			keyPressed = 1;
+			direction = [1.65, 1.35, -10, -2];
+		} else if (e.code === downKey) {
+			keyPressed = 2;
+			direction = [0.65, 0.35, 10, 2];
+		} else if (e.code === leftKey) {
+			keyPressed = 3;
+			direction = [1.15, 0.85, -2, -10];
+		} else if (e.code === rightKey) {
+			keyPressed = 4;
+			direction = [0.15, 1.85, 2, -10];
+		} else if (e.code === summonKey) {
+			summonPikachu();
+		} else {
+			keyPressed = 5;
+		}
+	});
+	interval = setInterval(UpdatePosition, 250);
+	intervalTime = setInterval(updateTime, 10);
+}
+
+function findRandomEmptyCell(board) {
+	let i = Math.floor(Math.random() * 29 + 1);
+	let j = Math.floor(Math.random() * 29 + 1);
+	while (board[i][j] != 0) {
+		i = Math.floor(Math.random() * 29 + 1);
+		j = Math.floor(Math.random() * 29 + 1);
+	}
+	return [i, j];
+}
+
+// Initails Functions
+function initailBoard(){
+	board = new Array();
 	for (let i = 0; i < 30; i++) {
 		board[i] = new Array();
-		for (let j = 0; j < 15; j++) {
+		for (let j = 0; j < 20; j++) {
 			if(isWall(i, j)) {
 				board[i][j] = 4;
-			} else if (i == 13 && j == 13) {
-				// Set Packman
-				pacman.i = 13
-				pacman.j = 13
-				board[i][j] = 2;
 			} else {
 				board[i][j] = 0;
 			}
 		}
 	}
-	board[13][7] = 10;
-	let pac_food = [30, 15, 5];
+}
+
+function initailPacman(){
+	pacman = new Pacman();
+	let emptyCell = findRandomEmptyCell(board);
+	pacman.x = emptyCell[0];
+	pacman.y = emptyCell[1];
+	board[emptyCell[0]][emptyCell[1]] = 2;
+}
+
+function initialGhosts(){
+	let ghostsAmount = document.getElementById("ghostSlider").value;
+	let x = 1;
+	let y = 1;
+	for (let i=0; i<ghostsAmount; i++){
+		ghosts.push(new Ghost());
+		ghosts[i].x = x;
+		ghosts[i].y = y;
+		ghosts[i].starterX = x;
+		ghosts[i].starterY = y;
+		board[x][y] = 10;
+		if (x == 28 && y == 18){
+			x = 1;
+			y = 18;
+		} else if (x == 1){
+			x = 28;
+		} else {
+			y = 18;
+		}
+	}
+}
+
+function initialFood(){
+	foodAmount = document.getElementById("foodSlider").value;
+	let pac_food = [foodAmount*0.6, foodAmount*0.3, foodAmount*0.1];
 	while (pac_food.reduce((a, b) => a + b) > 0) {
 		let emptyCell = findRandomEmptyCell(board);
 		let random = Math.floor(Math.random(4) * 10);
@@ -85,161 +210,128 @@ function Start() {
 			pac_food[random]--;
 		}
 	}
+}
 
+function initailExtra(){
 	// Pokeball
 	let emptyCell = findRandomEmptyCell(board);
-	board[emptyCell[0]][emptyCell[1]] = 11;
-
-	document.addEventListener('keyup', (e) => {
-		if (e.code === "ArrowUp") {
-			keyPressed = 1;
-		} else if (e.code === "ArrowDown") {
-			keyPressed = 2;
-		} else if (e.code === "ArrowLeft") {
-			keyPressed = 3;
-		} else if (e.code === "ArrowRight") {
-			keyPressed = 4;
-		} else if (e.code === "KeyP") {
-			summonPikachu();
-		} else {
-			keyPressed = 5;
-		}
-	});
-	interval = setInterval(UpdatePosition, 250);
-	intervalP = setInterval(UpdatePositionP, 200);
+	board[emptyCell[0]][emptyCell[1]] = 1;
+	// Pikachu
+	pikachu = new Pikachu();
+	pikachu.x = 14;
+	pikachu.y = 8;
 }
 
-function findRandomEmptyCell(board) {
-	let i = Math.floor(Math.random() * 29 + 1);
-	let j = Math.floor(Math.random() * 14 + 1);
-	while (board[i][j] != 0) {
-		i = Math.floor(Math.random() * 29 + 1);
-		j = Math.floor(Math.random() * 14 + 1);
-	}
-	return [i, j];
-}
 
+// Draw Functions
 function Draw() {
 	canvas.width = canvas.width; //clean board
-	lblScore.value = score;
-	lblTime.value = time_elapsed;
 	for (var i = 0; i < 30; i++) {
-		for (var j = 0; j < 15; j++) {
+		for (var j = 0; j < 20; j++) {
 			var center = new Object();
-			center.x = i * 60 + 30;
-			center.y = j * 60 + 30;
+			center.x = i * 30 + 30;
+			center.y = j * 30 + 30;
 			if (board[i][j] == 2) {
 				context.beginPath();
-				context.arc(center.x, center.y, 30, 0.15 * Math.PI, 1.85 * Math.PI); // half circle
-				context.lineTo(center.x, center.y);
-				context.fillStyle = pac_color; //color
+				context.arc(center.x - 15, center.y - 15, 15, direction[0] * Math.PI, direction[1] * Math.PI, false);
+
+				context.lineTo(center.x - 15, center.y - 15);
+
+				context.closePath();
+
+				context.fillStyle = pacman.color;
 				context.fill();
+
+				context.stroke();
+
 				context.beginPath();
-				context.arc(center.x + 5, center.y - 15, 5, 0, 2 * Math.PI); // circle
-				context.fillStyle = "black"; //color
+				context.arc(center.x + direction[2] - 15, center.y + direction[3] - 15, 2, 0, 2 * Math.PI, false);
+				context.fillStyle = "rgb(0, 0, 0)";
 				context.fill();
 			} else if (board[i][j] == 5) {
 				context.beginPath();
-				context.fillRect(center.x - 30, center.y - 30, 60, 60);
+				context.fillRect(center.x - 30, center.y - 30, 30, 30);
 				let img = new Image();
-				img.src = "..//assets//img//food3.png"; //transparent png
-				context.drawImage(img, center.x - 30, center.y - 30, 60, 60)
+				img.src = "..//assets//img//" + fruit5.value + ".png";
+				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
 			}else if (board[i][j] == 6) {
 				context.beginPath();
-				context.fillRect(center.x - 30, center.y - 30, 60, 60);
+				context.fillRect(center.x - 30, center.y - 30, 30, 30);
 				let img = new Image();
-				img.src = "..//assets//img//food4.png"; //transparent png
-				context.drawImage(img, center.x - 30, center.y - 30, 60, 60)
+				img.src = "..//assets//img//" + fruit15.value + ".png";
+				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
 			}else if (board[i][j] == 7) {
 				context.beginPath();
-				context.fillRect(center.x - 30, center.y - 30, 60, 60);
+				context.fillRect(center.x - 30, center.y - 30, 30, 30);
 				let img = new Image();
-				img.src = "..//assets//img//food5.png"; //transparent png
-				context.drawImage(img, center.x - 30, center.y - 30, 60, 60)
+				img.src = "..//assets//img//" + fruit25.value + ".png";
+				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
 			} else if (board[i][j] == 4) {
 				context.beginPath();
 				let img = document.getElementById("block");
-				context.drawImage(img, center.x - 30, center.y - 30, 60, 60)
-			} else if (board[i][j] == 10) {
+				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
+			} else if (board[i][j] == 20) {
 				context.beginPath();
-				context.fillRect(center.x - 30, center.y - 30, 60, 60);
+				context.fillRect(center.x - 30, center.y - 30, 30, 30);
 				let img = new Image();
-				img.src = "..//assets//img//ghost1.png"; //transparent png
-				context.drawImage(img, center.x - 30, center.y - 30, 60, 60)
-			} else if (board[i][j] == 11) {
+				img.src = "..//assets//img//ghost" + (board[i][j] - 19) + ".png";
+				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
+			} else if (board[i][j] == 21) {
 				context.beginPath();
-				context.fillRect(center.x - 30, center.y - 30, 60, 60);
+				context.fillRect(center.x - 30, center.y - 30, 30, 30);
 				let img = new Image();
-				img.src = "..//assets//img//pokeball.png"; //transparent png
-				context.drawImage(img, center.x - 30, center.y - 30, 60, 60)
+				img.src = "..//assets//img//ghost" + (board[i][j] - 19) + ".png";
+				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
+			} else if (board[i][j] == 22) {
+				context.beginPath();
+				context.fillRect(center.x - 30, center.y - 30, 30, 30);
+				let img = new Image();
+				img.src = "..//assets//img//ghost" + (board[i][j] - 19) + ".png";
+				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
+			} else if (board[i][j] == 23) {
+				context.beginPath();
+				context.fillRect(center.x - 30, center.y - 30, 30, 30);
+				let img = new Image();
+				img.src = "..//assets//img//ghost" + (board[i][j] - 19) + ".png";
+				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
+			} else if (board[i][j] == 1) {
+				context.beginPath();
+				context.fillRect(center.x - 30, center.y - 30, 30, 30);
+				let img = new Image();
+				img.src = "..//assets//img//pokeball.png";
+				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
 			} else if (summoned && board[i][j] == 15) {
 				context.beginPath();
-				context.fillRect(center.x - 30, center.y - 30, 60, 60);
+				context.fillRect(center.x - 30, center.y - 30, 30, 30);
 				let img = new Image();
-				img.src = "..//assets//img//pikachu.png"; //transparent png
-				context.drawImage(img, center.x - 30, center.y - 30, 60, 60)
+				img.src = "..//assets//img//pikachu.png";
+				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
 			}
 		}
 	}
 }
 
+// Packman Functions
 function UpdatePosition() {
-	board[pacman.i][pacman.j] = 0;
-	if (keyPressed == 1) {
-		if (pacman.j > 0 && board[pacman.i][pacman.j - 1] != 4) {
-			if (!checkEaten(0, -1)){
-				pacman.j--;
-			}
-			gotPokeball(0, -1);
-		}
+	// Pacman movement
+	UpdatePositionP();
+	if (board[pacman.x][pacman.y] == 5) {
+		score += 5;
+	} else if (board[pacman.x][pacman.y] == 6) {
+		score += 15;
+	} else if (board[pacman.x][pacman.y] == 7) {
+		score += 25;
 	}
-	if (keyPressed == 2) {
-		if (pacman.j < 14 && board[pacman.i][pacman.j + 1] != 4) {
-			if (!checkEaten(0, 1)){
-				pacman.j++;
-			}
-			gotPokeball(0, 1)
-		}
+	board[pacman.x][pacman.y] = 2;
+	// Ghosts movement
+	for(let index=0; index<ghosts.length; index++){
+		UpdatePositionG(index);
 	}
-	if (keyPressed == 3) {
-		if (pacman.i > 0 && board[pacman.i - 1][pacman.j] != 4) {
-			if (!checkEaten(-1, 0)){
-				pacman.i--;
-			}
-			gotPokeball(-1, 0)
-		}
+	// Pikachu movement
+	if (summoned){
+		UpdatePositionPi();
 	}
-	if (keyPressed == 4) {
-		if (pacman.i < 29 && board[pacman.i + 1][pacman.j] != 4) {
-			if (!checkEaten(1, 0)){
-				pacman.i++;
-			}
-			gotPokeball(1, 0)
-		}
-	}
-	if (board[pacman.i][pacman.j] == 5) {
-		score++;
-	} else if (board[pacman.i][pacman.j] == 6) {
-		score += 2;
-	} else if (board[pacman.i][pacman.j] == 7) {
-		score += 10;
-	}
-	if (summoned) {
-		board[pikachu.i][pikachu.j] = prevuisPikachu;
-		randomMovement(pikachu);
-		prevuisPikachu = board[pikachu.i][pikachu.j];
-		board[pikachu.i][pikachu.j] = 15;
-	}
-	board[ghost1.i][ghost1.j] = prevuisGhost1;
-	randomMovement(ghost1);
-	prevuisGhost1 = board[ghost1.i][ghost1.j];
-	board[ghost1.i][ghost1.j] = 10;
-	board[pacman.i][pacman.j] = 2;
-	var currentTime = new Date();
-	time_elapsed = (currentTime - start_time) / 1000;
-	if (score >= 20 && time_elapsed <= 10) {
-		pac_color = "green";
-	}
+	document.getElementById("lblScore").value = score;;
 	if (score >= 100) {
 		window.clearInterval(interval);
 		window.alert("Game completed");
@@ -248,108 +340,214 @@ function UpdatePosition() {
 	}
 }
 
-function checkEaten(x, y) {
-	if (board[pacman.i + x][pacman.j + y] == 10) {
-		window.alert("You got eaten !");
-		score -= 20;
-		pacman.i = 13;
-		pacman.j = 13;
-		return true;
-	}
-	return false;
+function updateTime(){
+	let currentTime = new Date();
+	time_elapsed = (currentTime - start_time) / 1000;
+	document.getElementById("lblTime").value = time_elapsed;
 }
 
 function UpdatePositionP() {
-	board[pikachu.i][pikachu.j] = 0;
-	if (summoned) {
-		board[pikachu.i][pikachu.j] = prevuisPikachu;
-		randomMovement(pikachu);
-		prevuisPikachu = board[pikachu.i][pikachu.j];
-		board[pikachu.i][pikachu.j] = 15;
+	board[pacman.x][pacman.y] = 0;
+	if (keyPressed == 1) {
+		if (!isWall(pacman.x, pacman.y - 1)) {
+			if (!checkEaten(0, -1)){
+				gotPokeball(0, -1);
+				pacman.y--;
+			}
+		}
 	}
-	Draw();
+	if (keyPressed == 2) {
+		if (!isWall(pacman.x, pacman.y + 1)) {
+			if (!checkEaten(0, 1)){
+				gotPokeball(0, 1)
+				pacman.y++;
+			}
+		}
+	}
+	if (keyPressed == 3) {
+		if (!isWall(pacman.x - 1, pacman.y)) {
+			if (!checkEaten(-1, 0)){
+				gotPokeball(-1, 0)
+				pacman.x--;
+			}
+		}
+	}
+	if (keyPressed == 4) {
+		if (!isWall(pacman.x + 1, pacman.y)) {
+			if (!checkEaten(1, 0)){
+				gotPokeball(1, 0)
+				pacman.x++;
+			}
+		}
+	}
 }
 
 function checkEaten(x, y) {
-	if (board[pacman.i + x][pacman.j + y] == 10) {
+	if (isGhost(pacman.x + x, pacman.y + y)) {
 		window.alert("You got eaten !");
-		score -= 20;
-		pacman.i = 13;
-		pacman.j = 13;
+		score -= 10;
+		initailPacman();
+		keyPressed = 5;
 		return true;
 	}
 	return false;
 }
 
-function checkEatenGhost(x, y) {
-	if (board[ghost1.i + x][ghost1.j + y] == 15) {
-		window.alert("Pikachu got a Ghost !");
-		ghost1.i = 13;
-		ghost1.j = 7;
-		return true;
+// Pokemon Functions
+function UpdatePositionPi() {
+	if (summoned) {
+		board[pikachu.x][pikachu.y] = pikachu.prevuisPikachu;
+		randomMovement(pikachu);
+		pikachu.prevuisPikachu = board[pikachu.x][pikachu.y];
+		board[pikachu.x][pikachu.y] = 15;
 	}
-	return false;
 }
 
 function gotPokeball(x, y) {
-	if (board[pacman.i + x][pacman.j + y] == 11) {
+	if (board[pacman.x + x][pacman.y + y] == 1) {
 		ownPokeball = true;
 	}
 }
 
 function summonPikachu() {
 	if (ownPokeball && !summoned){
-		pikachu.i = 1;
-		pikachu.j = 1;
-		board[1][1] = 15;
+		pikachu.prevuisPikachu = board[pikachu.x][pikachu.y];
+		board[pikachu.x][pikachu.y] = 15;
 		summoned = true;
 	}
 }
 
+// Ghosts Functions
+function UpdatePositionG(index) {
+	if (ghosts[index].prevuisGhost){
+		board[ghosts[index].x][ghosts[index].y] = ghosts[index].prevuisGhost;
+	} else {
+		board[ghosts[index].x][ghosts[index].y] = 0;
+	}
+	randomMovement(ghosts[index], index);
+	if (board[ghosts[index].x][ghosts[index].y] < 10 && board[ghosts[index].x][ghosts[index].y] != 2){
+		ghosts[index].prevuisGhost = board[ghosts[index].x][ghosts[index].y];
+	} else {
+		ghosts[index].prevuisGhost = undefined;
+	}
+	board[ghosts[index].x][ghosts[index].y] = 20 + index;
+}
+
+function checkEatenGhost(i, j, index) {
+	if (isGhost(i, j)) {
+		window.alert("Pikachu got a Ghost !");
+		ghosts[index].x = 1;
+		ghosts[index].y = 1;
+		return true;
+	}
+	return false;
+}
+
 // temp function until dolev will add the search algo
-function randomMovement(object, P) {
+function randomMovement(object, index, P) {
 	let movmentDone = false;
 	while(!movmentDone){
 		let random = Math.floor(Math.random(4) * 4);
 		if (random == 0) {
-			if (object.j > 0 && board[object.i][object.j - 1] != 4 && !isWall(object.i, object.j - 1)) {
-				if (!checkEatenGhost(0, -1)){
-					object.j--;
+			if (!isWall(object.x, object.y - 1) && !isGhost(object.x, object.y - 1)) {
+				if (!checkEatenGhost(0, -1, index)){
+					object.y--;
 				} else if (P) {
-					object.j--;
+					object.y--;
 				}
 				movmentDone = true;
 			}
 		}
 		if (random == 1) {
-			if (object.j < 14 && board[object.i][object.j + 1] != 4 && !isWall(object.i, object.j + 1)) {
-				if (!checkEatenGhost(0, 1)){
-					object.j++;
+			if (!isWall(object.x, object.y + 1) && !isGhost(object.x, object.y + 1)) {
+				if (!checkEatenGhost(0, 1, index)){
+					object.y++;
 				 }else if (P) {
-					object.j++;
+					object.y++;
 				}
 				movmentDone = true;
 			}
 		}
 		if (random == 2) {
-			if (object.i > 0 && board[object.i - 1][object.j] != 4 && !isWall(object.i - 1, object.j)) {
-				if (!checkEatenGhost(-1, 0)){
-					object.i--;
+			if (!isWall(object.x - 1, object.y) && !isGhost(object.x - 1, object.y)) {
+				if (!checkEatenGhost(-1, 0, index)){
+					object.x--;
 				} else if (P) {
-					object.i--;
+					object.x--;
 				}
 				movmentDone = true;
 			}
 		}
 		if (random == 3) {
-			if (object.i < 29 && board[object.i + 1][object.j] != 4 && !isWall(object.i + 1, object.j)) {
-				if (!checkEatenGhost(1, 0)){
-					object.i++;
+			if (!isWall(object.x + 1, object.y) && !isGhost(object.x + 1, object.y)) {
+				if (!checkEatenGhost(1, 0, index)){
+					object.x++;
 				} else if (P) {
-					object.i++;
+					object.x++;
 				}
 				movmentDone = true;
 			}
 		}
 	}	
 }
+
+
+// Setting Page
+$(document).ready(function() {
+	// Game Keys
+	let Up = document.getElementById("Up");
+	let Down = document.getElementById("Down");
+	let Left = document.getElementById("Left");
+	let Right = document.getElementById("Right");
+	let Summon = document.getElementById("Summon");
+	Up.addEventListener('keydown', function(event){
+		upKey = event.code;
+		Up.value = upKey;
+	});
+	Down.addEventListener('keydown', function(event){
+		downKey = event.code;
+		Down.value = downKey;
+	});
+	Left.addEventListener('keydown', function(event){
+		leftKey = event.code;
+		Left.value = leftKey;
+	});
+	Right.addEventListener('keydown', function(event){
+		rightKey = event.code;
+		Right.value = rightKey;
+	});
+	Summon.addEventListener('keydown', function(event){
+		summonKey = event.code;
+		Summon.value = summonKey;
+	});
+})
+
+function updateSlider(slideAmount, id) {
+	document.getElementById(id).innerHTML = slideAmount;
+};
+
+function foodCheck(){
+	fruit5 = document.getElementById("5points");
+	fruit15 = document.getElementById("15points");
+	fruit25 = document.getElementById("25points");
+	if (fruit5.value === fruit15.value) {
+		alert("You can't choose same type of fruit more then once.")
+		fruit5.style.borderColor = "red";
+		fruit15.style.borderColor = "red";
+		return false;
+	} else if(fruit5.value === fruit25.value) {
+		fruit5.style.borderColor = "red";
+		fruit25.style.borderColor = "red";
+		alert("You can't choose same type of fruit more then once.")
+		return false;
+	} else if (fruit15.value === fruit25.value){
+		fruit15.style.borderColor = "red";
+		fruit25.style.borderColor = "red";
+		alert("You can't choose same type of fruit more then once.")
+		return false;
+	}
+	return true;
+}
+
+
+

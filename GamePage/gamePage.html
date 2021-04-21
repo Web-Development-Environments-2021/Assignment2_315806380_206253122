@@ -6,16 +6,73 @@
 	</head>
 
 	<body>
-		<div id="score">
-			<label for="lblScore">SCORE:</label>
-			<input id="lblScore" type="text" />
+		<div id="settingsPage" style="text-align: center;">
+			<h1>Settings</h1>
+			<label for="gameKeys">Choose Game Keys:</label>
+			<div id="gameKeys" style="width: 30%; padding-left: 35%;">
+				<input id="Up" placeholder="Up key" />
+				<input id="Down" placeholder="Down key" />
+				<input id="Left" placeholder="Left key" />
+				<input id="Right" placeholder="Right key" />
+				<input id="Summon" placeholder="Summon key" />
+			</div>
+			<div>
+				<p>Choose amount of food:</p>
+				<input id="foodSlider" type="range" min="50" max="90" value="60" oninput="updateSlider(this.value, 'foodSliderNum')" />
+				<span id="foodSliderNum">60</span>
+			</div>
+			<div style="display: flex; flex-direction: column; width: 10%; padding-left: 45%;">
+				<label for="5points">Choose 5 points Fruit:</label>
+				<select id="5points">
+					<option></option>
+					<option value="Apple" selected="selected">Apple</option>
+					<option value="Strawberry">Strawberry</option>
+					<option value="GoldenApple">GoldenApple</option>
+				</select>
+				<label for="15points">Choose 15 points Fruit:</label>
+				<select id="15points">
+					<option></option>
+					<option value="Apple">Apple</option>
+					<option value="Strawberry" selected="selected">Strawberry</option>
+					<option value="GoldenApple">GoldenApple</option>
+				</select>
+				<label for="25points">Choose 25 points Fruit:</label>
+				<select id="25points">
+					<option></option>
+					<option value="Apple">Apple</option>
+					<option value="Strawberry">Strawberry</option>
+					<option value="GoldenApple" selected="selected">GoldenApple</option>
+				</select>
+			</div>
+			<div>
+				<p>Choose amount of time:</p>
+				<input id="timeSlider" type="range" min="60" max="600" value="180" oninput="updateSlider(this.value, 'timeSliderNum')" />
+				<span id="timeSliderNum">180</span>
+			</div>
+			<div>
+				<p>Choose amount of ghosts:</p>
+				<input id="ghostSlider" type="range" min="1" max="4" value="2" oninput="updateSlider(this.value, 'ghostSliderNum')" />
+				<span id="ghostSliderNum">2</span>
+			</div>
+			<button id="randomSettings" onclick="Random()">Random</button>
+			<button id="startGame" onclick="Start()">Start</button>
 		</div>
-		<div id="time">
-			<label for="lblTime">TIME:</label>
-			<input id="lblTime" type="text" />
+		<div id="gamePage" style="display: none;">
+			<audio loop id="theme">
+            	<source src="../assets/sound/PacManTheme.mp3" type="audio/mpeg">
+        	</audio>
+			<div id="score">
+				<label for="lblScore">SCORE:</label>
+				<input id="lblScore" type="text" />
+			</div>
+			<div id="time">
+				<label for="lblTime">TIME:</label>
+				<input id="lblTime" type="text" />
+			</div>
+			<div id="game">
+				<canvas id="canvas" height="600" width="900" style="background-color: black;"></canvas>
+				<img id="block" src="../assets/img/Block.jpg" style="display: none;">
+			</div>
 		</div>
-		<div id="game">
-			<canvas id="canvas" height="900" width="1800" style="background-color: black;"></canvas>
-			<img id="block" src="../assets/img/Block.jpg" style="display: none;">
 	</body>
 </html>
