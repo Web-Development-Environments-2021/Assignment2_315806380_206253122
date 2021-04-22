@@ -18,6 +18,7 @@ var timeLimit = 180;
 var context;
 var board;
 var score = 0;
+var scoreToGet;
 var pac_color;
 var start_time;
 var time_elapsed;
@@ -32,6 +33,8 @@ class Pacman {
 		this.x;
 		this.y;
 		this.color = "yellow";
+		this.life = 5;
+		this.ownPokeball = false;
 	}
 }
 var pacman;
@@ -58,27 +61,28 @@ var ghosts = [];
 
 class Pikachu {
 	constructor(){
+		this.starterX = 14;
+		this.starterY = 8;
 		this.x;
 		this.y;
 		this.prevuisPikachu = 0;
+		this.summoned = false;
+		this.summonTime;
 	}
 }
-var pikachu;
+var pikachu = new Pikachu();
 
 // Walls
-var walls = [[13, 7], [13, 8], [13, 9], [14, 9], [15, 7], [15, 8], [15, 9], [0, 0], [0, 1], [0, 2], [0, 3], [0, 4],
-	[0, 5], [0, 6], [0, 7],	[0, 8], [0, 9], [0, 10], [0, 11], [0, 12], [0, 13], [0, 14], [0, 15], [0, 16], [0, 17], 
-	[0, 18], [0, 19], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], 
-	[13, 0], [14, 0], [15, 0], [16, 0], [17, 0], [18, 0], [19, 0], [20, 0], [21, 0], [22, 0], [23, 0], [24, 0], [25, 0],
-	[26, 0], [27, 0], [28, 0], [29, 0], [1, 19], [2, 19], [3, 19], [4, 19], [5, 19], [6, 19], [7, 19], [8, 19],
-	[9, 19], [10, 19], [11, 19], [12, 19], [13, 19], [14, 19], [15, 19], [16, 19], [17, 19], [18, 19], [19, 19],
-	[20, 19], [21, 19], [22, 19], [23, 19], [24, 19], [25, 19], [26, 19], [27, 19], [28, 19], [29, 19], [29, 1],
-	[29, 2], [29, 3], [29, 4], [29, 5],  [29, 6], [29, 7], [29, 8], [29, 9], [29, 10], [29, 11], [29, 12], [29, 13],
-	[29, 14], [29, 15], [29, 16], [29, 17], [29, 18], [29, 19]];
+var walls = [[13, 7], [13, 8], [13, 9], [14, 9], [15, 7], [15, 8], [15, 9]];
 
-// for(let w=0; w<30; w++){
-// 	walls.push([w, 0]);
-// }
+for(let w=0; w<30; w++){
+	walls.push([w, 0]);
+	walls.push([w, 19]);
+}
+for(let w=0; w<20; w++){
+	walls.push([0, w]);
+	walls.push([29, w]);
+}
 
 function isWall(i, j) {
 	for (let k=0; k<walls.length; k++){
@@ -91,9 +95,6 @@ function isWall(i, j) {
 
 // Extra
 var keyPressed = 5;
-var spawnTime;
-var ownPokeball = false;
-var summoned = false;
 var direction = [0.15, 1.85, 2, -10];
 
 // Start game
@@ -141,7 +142,7 @@ function Start() {
 		}
 	});
 	interval = setInterval(UpdatePosition, 250);
-	intervalTime = setInterval(updateTime, 10);
+	intervalTime = setInterval(updateTime, 50);
 }
 
 function findRandomEmptyCell(board) {
@@ -210,16 +211,13 @@ function initialFood(){
 			pac_food[random]--;
 		}
 	}
+	scoreToGet = (foodAmount*0.6*5 + foodAmount*0.3*15 + foodAmount*0.1*25)*0.75
 }
 
 function initailExtra(){
 	// Pokeball
 	let emptyCell = findRandomEmptyCell(board);
 	board[emptyCell[0]][emptyCell[1]] = 1;
-	// Pikachu
-	pikachu = new Pikachu();
-	pikachu.x = 14;
-	pikachu.y = 8;
 }
 
 
@@ -300,7 +298,7 @@ function Draw() {
 				let img = new Image();
 				img.src = "..//assets//img//pokeball.png";
 				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
-			} else if (summoned && board[i][j] == 15) {
+			} else if (pikachu.summoned && board[i][j] == 15) {
 				context.beginPath();
 				context.fillRect(center.x - 30, center.y - 30, 30, 30);
 				let img = new Image();
@@ -311,16 +309,19 @@ function Draw() {
 	}
 }
 
-// Packman Functions
+// pacman Functions
 function UpdatePosition() {
 	// Pacman movement
 	UpdatePositionP();
 	if (board[pacman.x][pacman.y] == 5) {
 		score += 5;
+		document.getElementById("foodAmountLeft").innerHTML -= 1;
 	} else if (board[pacman.x][pacman.y] == 6) {
 		score += 15;
+		document.getElementById("foodAmountLeft").innerHTML -= 1;
 	} else if (board[pacman.x][pacman.y] == 7) {
 		score += 25;
+		document.getElementById("foodAmountLeft").innerHTML -= 1;
 	}
 	board[pacman.x][pacman.y] = 2;
 	// Ghosts movement
@@ -328,12 +329,13 @@ function UpdatePosition() {
 		UpdatePositionG(index);
 	}
 	// Pikachu movement
-	if (summoned){
+	if (pikachu.summoned){
 		UpdatePositionPi();
 	}
 	document.getElementById("lblScore").value = score;;
-	if (score >= 100) {
+	if (score >= scoreToGet) {
 		window.clearInterval(interval);
+		window.clearInterval(intervalTime);
 		window.alert("Game completed");
 	} else {
 		Draw();
@@ -343,7 +345,7 @@ function UpdatePosition() {
 function updateTime(){
 	let currentTime = new Date();
 	time_elapsed = (currentTime - start_time) / 1000;
-	document.getElementById("lblTime").value = time_elapsed;
+	document.getElementById("lblTime").value = (timeLimit - time_elapsed).toFixed(2);
 }
 
 function UpdatePositionP() {
@@ -384,6 +386,10 @@ function UpdatePositionP() {
 
 function checkEaten(x, y) {
 	if (isGhost(pacman.x + x, pacman.y + y)) {
+		pacman.life--;
+		if (pacman.life == 0){
+			gameLost();
+		}
 		window.alert("You got eaten !");
 		score -= 10;
 		initailPacman();
@@ -393,27 +399,49 @@ function checkEaten(x, y) {
 	return false;
 }
 
+function gameLost() {
+	window.clearInterval(interval);
+	window.clearInterval(intervalTime);
+	window.alert("You lost !");
+}
+
 // Pokemon Functions
 function UpdatePositionPi() {
-	if (summoned) {
-		board[pikachu.x][pikachu.y] = pikachu.prevuisPikachu;
+	if (pikachu.summoned) {
+		if (pikachu.prevuisPikachu){
+			board[pikachu.x][pikachu.y] = pikachu.prevuisPikachu;
+		} else {
+			board[pikachu.x][pikachu.y] = 0;
+		}
+		if ((new Date() - pikachu.summonTime)/1000 > 10){
+			pikachu.summoned = false;
+			initailExtra();
+			return;
+		}
 		randomMovement(pikachu);
-		pikachu.prevuisPikachu = board[pikachu.x][pikachu.y];
+		if (board[pikachu.x][pikachu.y] < 10 && board[pikachu.x][pikachu.y] != 2){
+			pikachu.prevuisPikachu = board[pikachu.x][pikachu.y];
+		} else {
+			pikachu.prevuisPikachu = undefined;
+		}
 		board[pikachu.x][pikachu.y] = 15;
 	}
 }
 
 function gotPokeball(x, y) {
 	if (board[pacman.x + x][pacman.y + y] == 1) {
-		ownPokeball = true;
+		pacman.ownPokeball = true;
 	}
 }
 
 function summonPikachu() {
-	if (ownPokeball && !summoned){
+	if (pacman.ownPokeball && !pikachu.summoned){
+		pikachu.x = pikachu.starterX;
+		pikachu.y = pikachu.starterY;
 		pikachu.prevuisPikachu = board[pikachu.x][pikachu.y];
 		board[pikachu.x][pikachu.y] = 15;
-		summoned = true;
+		pikachu.summonTime = new Date();
+		pikachu.summoned = true;
 	}
 }
 
@@ -503,22 +531,27 @@ $(document).ready(function() {
 	Up.addEventListener('keydown', function(event){
 		upKey = event.code;
 		Up.value = upKey;
+		document.getElementById("UpFixed").innerText = "Up Key: " + String.fromCharCode(event.keyCode)
 	});
 	Down.addEventListener('keydown', function(event){
 		downKey = event.code;
 		Down.value = downKey;
+		document.getElementById("DownFixed").innerText = "Down Key: " + String.fromCharCode(event.keyCode)
 	});
 	Left.addEventListener('keydown', function(event){
 		leftKey = event.code;
 		Left.value = leftKey;
+		document.getElementById("LeftFixed").innerText = "Left Key: " + String.fromCharCode(event.keyCode)
 	});
 	Right.addEventListener('keydown', function(event){
 		rightKey = event.code;
 		Right.value = rightKey;
+		document.getElementById("RightFixed").innerText = "Right Key: " + String.fromCharCode(event.keyCode)
 	});
 	Summon.addEventListener('keydown', function(event){
 		summonKey = event.code;
 		Summon.value = summonKey;
+		document.getElementById("SummonFixed").innerText = "Summon Key: " + String.fromCharCode(event.keyCode)
 	});
 })
 

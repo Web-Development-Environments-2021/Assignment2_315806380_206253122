@@ -61,17 +61,53 @@
 			<audio loop id="theme">
             	<source src="../assets/sound/PacManTheme.mp3" type="audio/mpeg">
         	</audio>
-			<div id="score">
-				<label for="lblScore">SCORE:</label>
-				<input id="lblScore" type="text" />
+			<div id="gameDetails" style="display: flex; flex-direction: row;">
+				<div id="score">
+					<label for="lblScore">SCORE:</label>
+					<input id="lblScore" type="text" />
+				</div>
+				<div id="time">
+					<label for="lblTime">TIME:</label>
+					<input id="lblTime" type="text" />
+				</div>
+				<div id="lifePoints">
+					<label for="lblLife">Life:</label>
+					<img id="lblLife" src="../assets/img/pacLife.png" width="30px" height="30px"/>
+					<img id="lblLife1" src="../assets/img/pacLife.png" width="30px" height="30px"/>
+					<img id="lblLife2" src="../assets/img/pacLife.png" width="30px" height="30px"/>
+					<img id="lblLife3" src="../assets/img/pacLife.png" width="30px" height="30px"/>
+					<img id="lblLife4" src="../assets/img/pacLife.png" width="30px" height="30px"/>
+				</div>
 			</div>
-			<div id="time">
-				<label for="lblTime">TIME:</label>
-				<input id="lblTime" type="text" />
-			</div>
-			<div id="game">
-				<canvas id="canvas" height="600" width="900" style="background-color: black;"></canvas>
-				<img id="block" src="../assets/img/Block.jpg" style="display: none;">
+			<div id="gameView" style="display: flex; flex-direction: row;">
+				<div id="game">
+					<canvas id="canvas" height="600" width="900" style="background-color: black;"></canvas>
+					<img id="block" src="../assets/img/Block.jpg" style="display: none;">
+				</div>
+				<div>
+					<label for="gameKeysFixed">Game Keys:</label>
+					<div id="gameKeysFixed" style="padding-left: 35%;">
+						<p id="UpFixed" >Up Key: ArrowUp</p>
+						<p id="DownFixed">Down Key: ArrowDown</p> 
+						<p id="LeftFixed">Left Key: ArrowLeft</p>
+						<p id="RightFixed">Right Key: ArrowRight</p>
+						<p id="SummonFixed">Summon Key: P</p>
+					</div>
+					<label for="foodAmountLeft">Amount of Food left:</label>
+					<p id="foodAmountLeft" style="padding-left: 35%;">90</p>
+					<div>
+						<label for="5pointsFood" >5 Points Food:</label>
+						<img id="5pointsFood" src="../assets/img/Apple.png" width="60px" height="60px"/>
+					</div>
+					<div>
+						<label for="15pointsFood" >15 Points Food:</label>
+						<img id="15pointsFood" src="../assets/img/Strawberry.png" width="60px" height="60px"/>
+					</div>
+					<div>
+						<label for="25pointsFood" >25 Points Food:</label>
+						<img id="25pointsFood" src="../assets/img/GoldenApple.png" width="60px" height="60px"/>
+					</div>
+				</div>
 			</div>
 		</div>
 	</body>
