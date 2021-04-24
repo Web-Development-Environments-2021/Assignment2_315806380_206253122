@@ -3,42 +3,41 @@
 	<head>
 		<script src="../jquery-3.4.1.slim.min.js"></script>
 		<script type="text/javascript" src="./Game.js"></script>
+		<link rel="stylesheet" type="text/css" href="gameStyle.css" />
 	</head>
 
 	<body>
-		<div id="settingsPage" style="text-align: center;">
+		<div id="settingsPage" style="width: 30%; padding-left: 45%;">
 			<h1>Settings</h1>
 			<label for="gameKeys">Choose Game Keys:</label>
-			<div id="gameKeys" style="width: 30%; padding-left: 35%;">
-				<input id="Up" placeholder="Up key" />
-				<input id="Down" placeholder="Down key" />
-				<input id="Left" placeholder="Left key" />
-				<input id="Right" placeholder="Right key" />
-				<input id="Summon" placeholder="Summon key" />
+			<div id="gameKeys" style="width: 100%;">
+				<input id="Up" class="submitInput1" placeholder="Up key" />
+				<input id="Down" class="submitInput1" placeholder="Down key" />
+				<input id="Left" class="submitInput1" placeholder="Left key" />
+				<input id="Right" class="submitInput1" placeholder="Right key" />
+				<input id="Summon" class="submitInput1" placeholder="Summon key" />
+				<input id="Invis" class="submitInput1" placeholder="Invisible key" />
 			</div>
 			<div>
 				<p>Choose amount of food:</p>
-				<input id="foodSlider" type="range" min="50" max="90" value="60" oninput="updateSlider(this.value, 'foodSliderNum')" />
+				<input id="foodSlider" class="slider" type="range" min="50" max="90" value="60" oninput="updateSlider(this.value, 'foodSliderNum')" />
 				<span id="foodSliderNum">60</span>
 			</div>
-			<div style="display: flex; flex-direction: column; width: 10%; padding-left: 45%;">
+			<div style="display: flex; flex-direction: column; width: 50%;">
 				<label for="5points">Choose 5 points Fruit:</label>
-				<select id="5points">
-					<option></option>
+				<select id="5points" class="select">
 					<option value="Apple" selected="selected">Apple</option>
 					<option value="Strawberry">Strawberry</option>
 					<option value="GoldenApple">GoldenApple</option>
 				</select>
 				<label for="15points">Choose 15 points Fruit:</label>
-				<select id="15points">
-					<option></option>
+				<select id="15points" class="select">
 					<option value="Apple">Apple</option>
 					<option value="Strawberry" selected="selected">Strawberry</option>
 					<option value="GoldenApple">GoldenApple</option>
 				</select>
 				<label for="25points">Choose 25 points Fruit:</label>
-				<select id="25points">
-					<option></option>
+				<select id="25points" class="select">
 					<option value="Apple">Apple</option>
 					<option value="Strawberry">Strawberry</option>
 					<option value="GoldenApple" selected="selected">GoldenApple</option>
@@ -46,37 +45,38 @@
 			</div>
 			<div>
 				<p>Choose amount of time:</p>
-				<input id="timeSlider" type="range" min="60" max="600" value="180" oninput="updateSlider(this.value, 'timeSliderNum')" />
+				<input id="timeSlider" class="slider" type="range" min="60" max="600" value="180" oninput="updateSlider(this.value, 'timeSliderNum')" />
 				<span id="timeSliderNum">180</span>
 			</div>
 			<div>
 				<p>Choose amount of ghosts:</p>
-				<input id="ghostSlider" type="range" min="1" max="4" value="2" oninput="updateSlider(this.value, 'ghostSliderNum')" />
+				<input id="ghostSlider" class="slider" type="range" min="1" max="4" value="2" oninput="updateSlider(this.value, 'ghostSliderNum')" />
 				<span id="ghostSliderNum">2</span>
 			</div>
 			<button id="randomSettings" onclick="Random()">Random</button>
 			<button id="startGame" onclick="Start()">Start</button>
 		</div>
 		<div id="gamePage" style="display: none;">
-			<audio loop id="theme">
-            	<source src="../assets/sound/PacManTheme.mp3" type="audio/mpeg">
+			<audio loop id="backgroundMusic">
+            	<source src="../assets/sound/backgroundMusic.mp3" type="audio/mpeg">
         	</audio>
-			<div id="gameDetails" style="display: flex; flex-direction: row;">
-				<div id="score">
-					<label for="lblScore">SCORE:</label>
-					<input id="lblScore" type="text" />
+			<div id="gameDetails" style="display: flex; flex-direction: row; place-items: buttom;">
+				<p>User Name</p>
+				<div id="score" style="padding-left: 20px; padding-top: 15px;">
+					<label for="lblScore">Score:</label>
+					<input id="lblScore" class="lbl" type="text" />
 				</div>
-				<div id="time">
-					<label for="lblTime">TIME:</label>
-					<input id="lblTime" type="text" />
+				<div id="time" style="padding-left: 20px; padding-top: 15px;">
+					<label for="lblTime">Time:</label>
+					<input id="lblTime" class="lbl" type="text"/>
 				</div>
-				<div id="lifePoints">
+				<div id="lifePoints" style="padding-left: 20px;">
 					<label for="lblLife">Life:</label>
-					<img id="lblLife" src="../assets/img/pacLife.png" width="30px" height="30px"/>
 					<img id="lblLife1" src="../assets/img/pacLife.png" width="30px" height="30px"/>
 					<img id="lblLife2" src="../assets/img/pacLife.png" width="30px" height="30px"/>
 					<img id="lblLife3" src="../assets/img/pacLife.png" width="30px" height="30px"/>
 					<img id="lblLife4" src="../assets/img/pacLife.png" width="30px" height="30px"/>
+					<img id="lblLife5" src="../assets/img/pacLife.png" width="30px" height="30px"/>
 				</div>
 			</div>
 			<div id="gameView" style="display: flex; flex-direction: row;">
@@ -84,27 +84,28 @@
 					<canvas id="canvas" height="600" width="900" style="background-color: black;"></canvas>
 					<img id="block" src="../assets/img/Block.jpg" style="display: none;">
 				</div>
-				<div>
-					<label for="gameKeysFixed">Game Keys:</label>
+				<div style="padding-left: 20%;">
+					<label for="gameKeysFixed" class="settingFixedHeadline">Game Keys:</label>
 					<div id="gameKeysFixed" style="padding-left: 35%;">
-						<p id="UpFixed" >Up Key: ArrowUp</p>
-						<p id="DownFixed">Down Key: ArrowDown</p> 
-						<p id="LeftFixed">Left Key: ArrowLeft</p>
-						<p id="RightFixed">Right Key: ArrowRight</p>
-						<p id="SummonFixed">Summon Key: P</p>
+						<p id="UpFixed" style="font-size: 20px; background-color: darkgray;">Up Key: ArrowUp</p>
+						<p id="DownFixed" style="font-size: 20px; background-color: darkgray;">Down Key: ArrowDown</p> 
+						<p id="LeftFixed" style="font-size: 20px; background-color: darkgray;">Left Key: ArrowLeft</p>
+						<p id="RightFixed" style="font-size: 20px; background-color: darkgray;">Right Key: ArrowRight</p>
+						<p id="SummonFixed" style="font-size: 20px; background-color: darkgray;">Summon Key: P</p>
+						<p id="InivsFixed" style="font-size: 20px; background-color: darkgray;">Invisible Key: I</p>
 					</div>
-					<label for="foodAmountLeft">Amount of Food left:</label>
-					<p id="foodAmountLeft" style="padding-left: 35%;">90</p>
+					<label for="foodAmountLeft" class="settingFixedHeadline">Amount of Food left:</label>
+					<p id="foodAmountLeft" style="font-size: 20px; text-align: center; background-color: darkgray; border-radius: 20px;">90</p>
 					<div>
-						<label for="5pointsFood" >5 Points Food:</label>
+						<label for="5pointsFood"class="settingFixedHeadline" >5 Points Food:</label>
 						<img id="5pointsFood" src="../assets/img/Apple.png" width="60px" height="60px"/>
 					</div>
 					<div>
-						<label for="15pointsFood" >15 Points Food:</label>
+						<label for="15pointsFood" class="settingFixedHeadline">15 Points Food:</label>
 						<img id="15pointsFood" src="../assets/img/Strawberry.png" width="60px" height="60px"/>
 					</div>
 					<div>
-						<label for="25pointsFood" >25 Points Food:</label>
+						<label for="25pointsFood" class="settingFixedHeadline">25 Points Food:</label>
 						<img id="25pointsFood" src="../assets/img/GoldenApple.png" width="60px" height="60px"/>
 					</div>
 				</div>

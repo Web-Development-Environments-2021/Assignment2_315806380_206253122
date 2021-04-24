@@ -5,6 +5,7 @@ var downKey = "ArrowDown";
 var leftKey = "ArrowLeft";
 var rightKey = "ArrowRight";
 var summonKey = "KeyP";
+var pillKey = "KeyI";
 var foodAmount;
 var fruit5 = "";
 var fruit15 = "";
@@ -19,7 +20,6 @@ var context;
 var board;
 var score = 0;
 var scoreToGet;
-var pac_color;
 var start_time;
 var time_elapsed;
 
@@ -35,9 +35,17 @@ class Pacman {
 		this.color = "yellow";
 		this.life = 5;
 		this.ownPokeball = false;
+		this.invis = false;
+		this.invisTime = 0;
+		this.invisAmount = 0;
 	}
 }
-var pacman;
+var pacman = new Pacman();
+
+
+// Ghosts
+
+var ghostMovement = false;
 
 class Ghost {
 	constructor(){
@@ -59,6 +67,8 @@ function isGhost(x, y){
 }
 var ghosts = [];
 
+
+// Pikachu
 class Pikachu {
 	constructor(){
 		this.starterX = 14;
@@ -73,7 +83,11 @@ class Pikachu {
 var pikachu = new Pikachu();
 
 // Walls
-var walls = [[13, 7], [13, 8], [13, 9], [14, 9], [15, 7], [15, 8], [15, 9]];
+var walls = [[13, 7], [13, 8], [13, 9], [14, 9], [15, 7], [15, 8], [15, 9],
+			 [3, 3], [4, 3], [3, 4], [4, 4],
+			 [6, 13], [7, 13], [6, 14], [7, 14], [8, 13], [8, 14],
+			 [22, 3], [22, 5], [22, 7], [22, 9], [22, 11], [22, 13],
+			 [16, 16], [16, 15], [16, 14], [17, 16], [17, 15], [17, 14]];
 
 for(let w=0; w<30; w++){
 	walls.push([w, 0]);
@@ -110,15 +124,18 @@ function Start() {
 
 	document.getElementById("settingsPage").style.display = 'none';
 	document.getElementById("gamePage").style.display = 'block';
+	$('#backgroundMusic').trigger('play');
 
 	start_time = new Date();
 	timeLimit = document.getElementById("timeSlider").value;
+	document.getElementById('foodAmountLeft').innerHTML = document.getElementById('foodSlider').value;
 
 	initailBoard();
 	initialGhosts();
 	initailPacman();
 	initialFood();
-	initailExtra();
+	initailPokeball();
+	initailPill();
 
 	
 
@@ -137,7 +154,9 @@ function Start() {
 			direction = [0.15, 1.85, 2, -10];
 		} else if (e.code === summonKey) {
 			summonPikachu();
-		} else {
+		} else if (e.code === pillKey) {
+			usePill();
+		}else {
 			keyPressed = 5;
 		}
 	});
@@ -171,7 +190,6 @@ function initailBoard(){
 }
 
 function initailPacman(){
-	pacman = new Pacman();
 	let emptyCell = findRandomEmptyCell(board);
 	pacman.x = emptyCell[0];
 	pacman.y = emptyCell[1];
@@ -214,10 +232,18 @@ function initialFood(){
 	scoreToGet = (foodAmount*0.6*5 + foodAmount*0.3*15 + foodAmount*0.1*25)*0.75
 }
 
-function initailExtra(){
+function initailPokeball(){
 	// Pokeball
 	let emptyCell = findRandomEmptyCell(board);
 	board[emptyCell[0]][emptyCell[1]] = 1;
+}
+
+function initailPill(){
+	//invis pills
+	for(let i=0 ;i<3 ;i++){
+		let emptyCell = findRandomEmptyCell(board);
+		board[emptyCell[0]][emptyCell[1]] = 3;
+	}
 }
 
 
@@ -304,6 +330,12 @@ function Draw() {
 				let img = new Image();
 				img.src = "..//assets//img//pikachu.png";
 				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
+			} else if (board[i][j] == 3) {
+				context.beginPath();
+				context.fillRect(center.x - 30, center.y - 30, 30, 30);
+				let img = new Image();
+				img.src = "..//assets//img//pill.png";
+				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
 			}
 		}
 	}
@@ -311,6 +343,11 @@ function Draw() {
 
 // pacman Functions
 function UpdatePosition() {
+	// Checking pacman invis time
+	if (time_elapsed - pacman.invisTime > 3){
+		pacman.invis = false;
+		pacman.color = "yellow";
+	}
 	// Pacman movement
 	UpdatePositionP();
 	if (board[pacman.x][pacman.y] == 5) {
@@ -325,15 +362,23 @@ function UpdatePosition() {
 	}
 	board[pacman.x][pacman.y] = 2;
 	// Ghosts movement
-	for(let index=0; index<ghosts.length; index++){
-		UpdatePositionG(index);
+	if (ghostMovement) {
+		for(let index=0; index<ghosts.length; index++){
+			UpdatePositionG(index);
+		}
+		ghostMovement = false;
+	} else {
+		ghostMovement = true;
 	}
+
 	// Pikachu movement
 	if (pikachu.summoned){
 		UpdatePositionPi();
 	}
-	document.getElementById("lblScore").value = score;;
-	if (score >= scoreToGet) {
+	document.getElementById("lblScore").value = score;
+	if ((timeLimit - time_elapsed) < 0){
+		gameLost();
+	} else if (score >= scoreToGet) {
 		window.clearInterval(interval);
 		window.clearInterval(intervalTime);
 		window.alert("Game completed");
@@ -352,51 +397,72 @@ function UpdatePositionP() {
 	board[pacman.x][pacman.y] = 0;
 	if (keyPressed == 1) {
 		if (!isWall(pacman.x, pacman.y - 1)) {
-			if (!checkEaten(0, -1)){
-				gotPokeball(0, -1);
+			if (!checkEaten(0, -1) || pacman.invis){
 				pacman.y--;
+				gotPokeball();
+				gotPill();
 			}
 		}
 	}
 	if (keyPressed == 2) {
 		if (!isWall(pacman.x, pacman.y + 1)) {
-			if (!checkEaten(0, 1)){
-				gotPokeball(0, 1)
+			if (!checkEaten(0, 1) || pacman.invis){
 				pacman.y++;
+				gotPokeball();
+				gotPill();
 			}
 		}
 	}
 	if (keyPressed == 3) {
 		if (!isWall(pacman.x - 1, pacman.y)) {
-			if (!checkEaten(-1, 0)){
-				gotPokeball(-1, 0)
+			if (!checkEaten(-1, 0) || pacman.invis){
 				pacman.x--;
+				gotPokeball();
+				gotPill();
 			}
 		}
 	}
 	if (keyPressed == 4) {
 		if (!isWall(pacman.x + 1, pacman.y)) {
-			if (!checkEaten(1, 0)){
-				gotPokeball(1, 0)
+			if (!checkEaten(1, 0) || pacman.invis){
 				pacman.x++;
+				gotPokeball();
+				gotPill();
 			}
 		}
 	}
 }
 
 function checkEaten(x, y) {
-	if (isGhost(pacman.x + x, pacman.y + y)) {
+	if (isGhost(pacman.x + x, pacman.y + y) || isGhost(pacman.x, pacman.y)) {
+		let lifeImage = 'lblLife' + pacman.life;
+		document.getElementById(lifeImage).style.visibility = 'hidden';
 		pacman.life--;
+		window.alert("You got eaten !");
+		score -= 10;
 		if (pacman.life == 0){
 			gameLost();
 		}
-		window.alert("You got eaten !");
-		score -= 10;
 		initailPacman();
 		keyPressed = 5;
 		return true;
 	}
 	return false;
+}
+
+function gotPill() {
+	if (board[pacman.x][pacman.y] == 3) {
+		pacman.invisAmount++;
+	}
+}
+
+function usePill() {
+	if (pacman.invisAmount > 0){
+		pacman.invisAmount--;
+		pacman.invis = true;
+		pacman.invisTime = time_elapsed;
+		pacman.color = "darkgray";
+	}
 }
 
 function gameLost() {
@@ -415,7 +481,7 @@ function UpdatePositionPi() {
 		}
 		if ((new Date() - pikachu.summonTime)/1000 > 10){
 			pikachu.summoned = false;
-			initailExtra();
+			initailPokeball();
 			return;
 		}
 		randomMovement(pikachu);
@@ -428,8 +494,8 @@ function UpdatePositionPi() {
 	}
 }
 
-function gotPokeball(x, y) {
-	if (board[pacman.x + x][pacman.y + y] == 1) {
+function gotPokeball() {
+	if (board[pacman.x][pacman.y] == 1) {
 		pacman.ownPokeball = true;
 	}
 }
@@ -452,7 +518,11 @@ function UpdatePositionG(index) {
 	} else {
 		board[ghosts[index].x][ghosts[index].y] = 0;
 	}
-	randomMovement(ghosts[index], index);
+	if (!pacman.invis){
+		smartMovement(ghosts[index], index);
+	} else {
+		randomMovement(ghosts[index], index);
+	}
 	if (board[ghosts[index].x][ghosts[index].y] < 10 && board[ghosts[index].x][ghosts[index].y] != 2){
 		ghosts[index].prevuisGhost = board[ghosts[index].x][ghosts[index].y];
 	} else {
@@ -462,16 +532,49 @@ function UpdatePositionG(index) {
 }
 
 function checkEatenGhost(i, j, index) {
-	if (isGhost(i, j)) {
+	if (isGhost(pikachu.x + i,pikachu.y + j) || isGhost(pikachu.x,pikachu.y)) {
 		window.alert("Pikachu got a Ghost !");
-		ghosts[index].x = 1;
-		ghosts[index].y = 1;
+		ghosts[index].x = ghosts[index].starterX;
+		ghosts[index].y = ghosts[index].starterY;
+		board[ghosts[index].starterX][ghosts[index].starterY] = 20 + index;
 		return true;
 	}
 	return false;
 }
 
 // temp function until dolev will add the search algo
+function smartMovement(object, index) {
+	if (Math.abs(object.x - pacman.x) > Math.abs(object.y - pacman.y)){
+		if (object.x - pacman.x > 0){
+			if (!isWall(object.x-1, object.y)){
+				object.x--;
+			} else {
+				randomMovement(object, index);
+			}
+		} else {
+			if (!isWall(object.x+1, object.y)){
+				object.x++;
+			} else {
+				randomMovement(object, index);
+			}
+		}
+	} else {
+		if (object.y - pacman.y > 0){
+			if (!isWall(object.x, object.y-1)){
+				object.y--;
+			} else {
+				randomMovement(object, index);
+			}
+		} else {
+			if (!isWall(object.x, object.y+1)){
+				object.y++;
+			} else {
+				randomMovement(object, index);
+			}
+		}
+	}
+}
+
 function randomMovement(object, index, P) {
 	let movmentDone = false;
 	while(!movmentDone){
@@ -520,7 +623,12 @@ function randomMovement(object, index, P) {
 }
 
 
+
+//
+//
 // Setting Page
+
+
 $(document).ready(function() {
 	// Game Keys
 	let Up = document.getElementById("Up");
@@ -528,6 +636,7 @@ $(document).ready(function() {
 	let Left = document.getElementById("Left");
 	let Right = document.getElementById("Right");
 	let Summon = document.getElementById("Summon");
+	let Invis = document.getElementById("Invis");
 	Up.addEventListener('keydown', function(event){
 		upKey = event.code;
 		Up.value = upKey;
@@ -552,6 +661,11 @@ $(document).ready(function() {
 		summonKey = event.code;
 		Summon.value = summonKey;
 		document.getElementById("SummonFixed").innerText = "Summon Key: " + String.fromCharCode(event.keyCode)
+	});
+	Invis.addEventListener('keydown', function(event){
+		InvisKey = event.code;
+		Invis.value = InvisKey;
+		document.getElementById("InvisFixed").innerText = "Invisible Key: " + String.fromCharCode(event.keyCode)
 	});
 })
 
@@ -579,6 +693,9 @@ function foodCheck(){
 		alert("You can't choose same type of fruit more then once.")
 		return false;
 	}
+	document.getElementById('5pointsFood').src = "../assets/img/" + fruit5.value + ".png";
+	document.getElementById('15pointsFood').src = "../assets/img/" + fruit15.value + ".png";
+	document.getElementById('25pointsFood').src = "../assets/img/" + fruit25.value + ".png";
 	return true;
 }
 
