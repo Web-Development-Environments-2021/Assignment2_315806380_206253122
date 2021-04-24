@@ -1,14 +1,13 @@
 $(function() {
   // Initialize form validation on the registration form.
   // It has the name attribute "registration"
-  $("form[name='registration']").validate({
+  $("form[name='form']").validate({
     // Specify validation rules
     rules: {
       // The key name on the left side is the name attribute
       // of an input field. Validation rules are defined
       // on the right side
-      firstname: "required",
-      lastname: "required",
+      userSignup: "required",
       email: {
         required: true,
         // Specify that email should be validated
@@ -17,16 +16,15 @@ $(function() {
       },
       password: {
         required: true,
-        minlength: 5
+        minlength: 6
       }
     },
     // Specify validation error messages
     messages: {
-      firstname: "Please enter your firstname",
-      lastname: "Please enter your lastname",
+      userSignup: "Please enter your firstname",
       password: {
         required: "Please provide a password",
-        minlength: "Your password must be at least 5 characters long"
+        minlength: "Your password must be at least 6 characters long"
       },
       email: "Please enter a valid email address"
     },

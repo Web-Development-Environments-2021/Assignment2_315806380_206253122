@@ -77,6 +77,7 @@ $(document).ready(function() {
 
 // Signup
 
+
 $(document).ready(function() {
     $('#register').click(function() {
         let username, password, fullname, email, birthdate;

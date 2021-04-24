@@ -2,8 +2,8 @@
 <html>
 	<head>
 		<script src="../jquery-3.4.1.slim.min.js"></script>
-        <script src="vendor/jquery-validation/dist/jquery.validate.min.js"></script>
-        <script src="js/form-validation.js"></script>
+        <script src="jquery-validation/dist/jquery.validate.min.js"></script>
+        <!-- <script src="js/form-validation.js"></script> -->
 		<script type="text/javascript" src="./Welcome.js"></script>
         <link rel="stylesheet" type="text/css" href="welcomeStyle.css" />
 	</head>
@@ -29,7 +29,7 @@
                 <h1>Sign Up</h1>
                 <p>Please fill the form in order to Sign Up.</p>
                 <input id="userSignup" name="userSignup" class="submitInput1" type="text" placeholder="User Name" required>
-                <input id="passwordSubmit" minlength="6" class="submitInput1" type="password" placeholder="Password" required>
+                <input id="passwordSubmit" name="passwordSubmit" minlength="6" class="submitInput1" type="password" placeholder="Password" required>
                 <input id="nameSignup" class="submitInput1" type="text" placeholder="Full Name" required>
                 <input id="emailSignup" class="submitInput1" type="email" placeholder="email address" required>
                 <input id="dateSignup" class="submitInput1" type="date" placeholder="Pick your Date" min="1950-01-01" max="2021-01-01" required>
