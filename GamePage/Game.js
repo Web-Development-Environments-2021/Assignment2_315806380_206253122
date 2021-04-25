@@ -191,6 +191,7 @@ function initailBoard(){
 
 function initailPacman(){
 	let emptyCell = findRandomEmptyCell(board);
+	pacman.prevuisPikachu = 0;
 	pacman.x = emptyCell[0];
 	pacman.y = emptyCell[1];
 	board[emptyCell[0]][emptyCell[1]] = 2;
@@ -536,6 +537,7 @@ function checkEatenGhost(i, j, index) {
 		window.alert("Pikachu got a Ghost !");
 		ghosts[index].x = ghosts[index].starterX;
 		ghosts[index].y = ghosts[index].starterY;
+		ghosts[index].prevuisGhost = 0;
 		board[ghosts[index].starterX][ghosts[index].starterY] = 20 + index;
 		return true;
 	}
