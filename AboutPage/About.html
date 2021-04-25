@@ -9,7 +9,7 @@
         <a href="#about" onclick="openModal()">About</a>
     </div>
 
-<dialog id="modalDialog">
+<dialog id="modalDialog"><button id="X" onclick="closeModal()">X</button>
     <div>
     <b><u>Submission by</u>:</b> Eran German, Dolev Drori<br>
     <b><u>We used jquery plugins</u>:</b>
@@ -30,6 +30,10 @@
                 diaglog.close();
             }
         });
+    }
+    function closeModal(){
+        let diaglog = document.getElementById("modalDialog");
+        diaglog.close()
     }
 </script>
 
