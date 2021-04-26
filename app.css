@@ -1,0 +1,428 @@
+/* For all pages */
+body {
+	background-image: url('./assets/img/pacmanBackground.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    font-style: oblique;
+    font-weight: bold;
+    color: lightgray;
+}
+
+.inputers {
+    width: 50%;
+    padding-left: 37.5%;
+}
+
+.submitInput1 {
+	width: 50%;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 3px lightgray;
+    border-radius: 4px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+button {
+	border-radius: 12px;
+	height: 50px;
+	width: 100px;
+	transition-duration: 0.4s;
+}
+
+button:hover {
+	background-color: darkgray;
+	color: white;
+}
+
+
+/* Menu */
+
+#menu {
+    overflow: hidden;
+    background: none;
+    width: 100%;
+}
+
+#menu a {
+    float: left;
+    display: block;
+    color: white;
+    font-size: 20px;
+    font-style: oblique;
+    font-weight: bold;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+#menu a:hover {
+    background-color: #006680;
+    color: black;
+}
+    
+a {
+    color: antiquewhite;
+    font: Arial;
+}
+
+/* Welcome Page */
+
+#welcomePage {
+    padding-top: 10%;
+}
+
+#loginPage {
+    display: none;
+    place-items: center;
+    flex-direction: column;
+    padding-top: 10%;
+}
+
+#signupPage {
+    display: none;
+    place-items: center;
+    flex-direction: column;
+}
+
+/* Web Menu */
+@import url(https://fonts.googleapis.com/css?family=Shadows+Into+Light);
+
+#exit {
+  height:30px;
+  width:30px;
+  background:#024353;
+  border: 1px solid black;
+  border-radius:50px;
+  position:Absolute;
+  top:-30px;
+  z-index:50;
+  right:-15px;
+  -webkit-transition:0.5s;
+  transition:0.5s;
+  cursor:pointer;
+}
+
+#exit:after {
+  content:"";
+  display:block;
+  height:15px;
+  width:15px;
+  background:transparent;
+  border-radius:50px;
+  position:absolute;
+  top:5px;
+  left:5px;
+  
+  border:3px solid black;
+  border-top-color:transparent;
+}
+
+#exit:before {
+  content:"";
+  display:block;
+  height:10px;
+  width:3px;
+  background:black;
+  z-index:70;
+  position:Absolute;
+  right:13px;
+  top:6px;
+}
+
+#circle {
+  height:40px;
+  width:40px;
+  background:transparent;
+  border:1px solid white;
+  border-radius:50px;
+  position:absolute;
+  top:-35px;
+  z-index:40;
+  right:-20px;
+}
+
+#exit:hover {
+  background:#7A0000;  
+}
+
+#allthethings {
+  width:0px;
+  height:0px;
+  
+  border-left: 300px solid transparent;
+  border-right:300px solid transparent;
+  border-top: 300px solid transparent;
+  border-radius: px;
+  position:relative;
+  margin:auto;
+  top:5px;
+  left:2px;
+}
+
+#start {
+  position:relative;
+  bottom:330px;
+  right:300px;
+  height:50px;
+  width:600px;
+  background:#006680;
+  text-align:center;
+  font-size:30px;
+ background-size: 1px 300%;
+ -webkit-transition:0.5s;
+  transition:0.5s;
+  color:lightgray;
+  font-family:shadows into light;
+  
+  cursor:pointer;
+}
+
+#start:hover {
+  background:#7A0000;
+  color:white;
+-webkit-transform:rotate(-1deg);
+  transform:rotate(-2deg); 
+}
+
+#signup:hover {
+  background:#7A0000;
+  color:white;
+   
+  -webkit-transform:rotate(-2deg);
+  transform:rotate(-2deg);
+}
+
+#left {
+  height:100px;
+    width:600px;
+  background:black;
+  position:absolute;
+  z-index:6;
+  -webkit-transform:rotate(45deg);
+  transform:rotate(45deg);
+  top:-175px;
+  right:-104px;
+  border-top:1px solid white;
+}
+
+#right {
+  height:100px;
+  width:600px;
+  background:black;
+  position:absolute;
+  top:-229px;
+  -webkit-transform:rotate(-45deg);
+  transform:rotate(-45deg);
+  z-index:7;
+  left:-56px;
+  border-top:1px solid white; 
+}
+
+#start p {
+  position:relative;
+  top:2px;
+  right:4px; 
+}
+
+#signup {
+  height:50px;
+  width:500px;
+  background:#006680;
+  position:relative;
+  bottom:345px;
+  right:240px;
+  text-align:center;
+  font-size:30px;
+  font-family:shadows into light;
+  color:lightgray;
+   -webkit-transition:0.5s;
+  transition:0.5s;
+  cursor:pointer;
+}
+
+#signup p {
+  position:relative;
+  top:0px;
+  right:9px; 
+}
+
+/* End Welcome Page */
+
+/* Form Style */
+
+.container {
+  width: 500px;
+  margin: 25px auto;
+}
+
+.title {
+  margin-bottom: 1rem;
+}
+
+form {
+  padding: 20px;
+  width: 100%;
+  color: lightgray;
+  border-radius: 4px;
+}
+form label,
+form input,
+form button {
+  border: 0;
+  margin-bottom: 3px;
+  display: block;
+  width: 100%;
+}
+form input {
+  height: 25px;
+  line-height: 25px;
+  background: #fff;
+  color: #000;
+  padding: 0 6px;
+  box-sizing: border-box;
+}
+
+form button {
+  height: 30px;
+  line-height: 30px;
+  background: #e67e22;
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-top: 1.5rem;
+  cursor: pointer;
+}
+form .error {
+  color: #ff0000;
+}
+
+.article-reference {
+  margin-top: 15px;
+}
+.article-reference a {
+  color: #e67e22;
+}
+
+input[type=submit] {
+    width: 15%;
+    background-color: transparent;
+    border-radius: 20px;
+    color: white;
+    margin-left: 17.5%;
+    font-size: 17.5px;
+    font-weight: bold;
+  }
+
+input[type=submit]:hover {
+    background-color: #006680;
+    color: black;
+}
+
+/* End Form Style */
+
+/* Setting and Game Pages */
+
+.lbl {
+    border-radius: 20px; 
+    border-color: black; 
+    font-style: oblique;
+    font-weight: bold;
+    width: 50px;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 50%;
+    height: 25px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
+  
+  .slider:hover {
+    opacity: 1;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #1c6ce4;
+    cursor: pointer;
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: #1c6ce4;
+    cursor: pointer;
+  }
+  
+.select-hidden {
+    display: none;
+    visibility: hidden;
+    padding-right: 10px;
+  }
+  .select {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    color: black;
+    border-radius: 20px;
+    font-style: oblique;
+    font-weight: bold;
+  }
+  .select-styled {
+    position: absolute; 
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 8px 15px;
+  }
+  
+  .select-options {
+    display: none; 
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    z-index: 999;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  
+  .settingFixedHeadline {
+      font-size: 30px;
+  }
+  
+  /* End Setting and Game Pages */
+  
+
+  /* Testing */
+
+
+/* Setting Page */
+
+#settingsPage {
+    display: none;
+    padding-top: 50px;
+}
+
+
+/* Game Page */
+
+#gamePage {
+    display: none;
+}

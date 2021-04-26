@@ -1,21 +1,169 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script src="./jquery-3.4.1.slim.min.js"></script>
+		<script src="jquery-3.4.1.slim.min.js"></script>
+		<script src="jquery.validate.min.js"></script>
 		<script type="text/javascript" src="./app.js"></script>
+		<link rel="stylesheet" type="text/css" href="app.css" />
+
+		<p style="font-size: 25px; margin-left: 32.5%;">Sumbitted Eran German - 315806380 and Dolev Drori 206253122</p>
 	</head>
 
 	<body>
-		<div id="score">
-			<label for="lblScore">SCORE:</label>
-			<input id="lblScore" type="text" />
+		<header id="menu">
+			<img src="./assets/img/logo.png" onclick="changeDiv('welcomePage')" style="height: 50px; float: left;"/>
+			<a onclick="changeDiv('loginPage')">Login</a>
+			<a onclick="changeDiv('signupPage')">Signup</a>
+			<a onclick="changeDiv('rulesPage')">Rules</a>
+			<a onclick="openModal()">About</a>
+			<a id="userExit" onclick="changeDiv('welcomePage')" style="display: none;">Exit</a>
+		</header>
+		<dialog id="modalDialog"><button id="X" onclick="closeModal()">X</button>
+			<div class="dialog">
+			<b><u>Submission by</u>:</b> Eran German, Dolev Drori<br>
+			<b><u>We used jquery plugins</u>:</b>
+			<ul>
+				<li>Validation: for checking valid data in sign up and login pages</li>
+			</ul>
+			<b><u>Difficulties we had in the assingment</u>:</b>
+			<ul>
+				<li></li>
+			</ul>
+			</div>
+		</dialog>
+		<div id="welcomePage">
+			<div id="allthethings">
+				<div id="left"></div>
+				<div id="start"><p>Login</p></div>
+				<div id="signup"><p>Signup</p></div>
+				<div id="right"></div>
+				
+				<div id="exit"></div>
+				<div id="circle"></div>
+			  </div>
 		</div>
-		<div id="time">
-			<label for="lblTime">TIME:</label>
-			<input id="lblTime" type="text" />
+        <div id="loginPage" class="inputers">
+            <form action="" id="loginForm" name="form">
+                <input id="userLogin" name="userLogin" class="submitInput1" type="text" placeholder="User Name">
+                <input id="passwordLogin" name="passwordLogin" class="submitInput1" type="password" placeholder="Password">
+                <input id="Login" type="submit"></input>
+            </form>
+        </div>
+        <div id="signupPage" class="inputers">
+            <form action="" id="signupForm" name="form">
+                <h1>Sign Up</h1>
+                <p>Please fill the form in order to Sign Up.</p>
+                <input id="userSignup" name="userSignup" class="submitInput1" type="text" placeholder="User Name">
+                <input id="passwordSubmit" name="passwordSubmit" class="submitInput1" type="password" placeholder="Password">
+                <input id="nameSignup" name="nameSignup" class="submitInput1" type="text" placeholder="Full Name">
+                <input id="emailSignup" name="emailSignup" class="submitInput1" type="email" placeholder="email address">
+                <input id="dateSignup" name="dateSignup" class="submitInput1" type="date" placeholder="Pick your Date" min="1950-01-01" max="2022-01-01">
+                <input id="register" type="submit"></input>
+            </form>
+        </div>
+		<div id="settingsPage" class="inputers">
+			<h1>Settings</h1>
+			<label for="gameKeys">Choose Game Keys:</label>
+			<div id="gameKeys" style="width: 100%;">
+				<input id="Up" class="submitInput1" placeholder="Up key" />
+				<input id="Down" class="submitInput1" placeholder="Down key" />
+				<input id="Left" class="submitInput1" placeholder="Left key" />
+				<input id="Right" class="submitInput1" placeholder="Right key" />
+				<input id="Summon" class="submitInput1" placeholder="Summon key" />
+				<input id="Invis" class="submitInput1" placeholder="Invisible key" />
+			</div>
+			<div>
+				<p>Choose amount of food:</p>
+				<input id="foodSlider" class="slider" type="range" min="50" max="90" value="60" oninput="updateSlider(this.value, 'foodSliderNum')" />
+				<span id="foodSliderNum">60</span>
+			</div>
+			<div style="display: flex; flex-direction: column; width: 50%;">
+				<label for="5points">Choose 5 points Fruit:</label>
+				<select id="5points" class="select">
+					<option value="Apple" selected="selected">Apple</option>
+					<option value="Strawberry">Strawberry</option>
+					<option value="GoldenApple">GoldenApple</option>
+				</select>
+				<label for="15points">Choose 15 points Fruit:</label>
+				<select id="15points" class="select">
+					<option value="Apple">Apple</option>
+					<option value="Strawberry" selected="selected">Strawberry</option>
+					<option value="GoldenApple">GoldenApple</option>
+				</select>
+				<label for="25points">Choose 25 points Fruit:</label>
+				<select id="25points" class="select">
+					<option value="Apple">Apple</option>
+					<option value="Strawberry">Strawberry</option>
+					<option value="GoldenApple" selected="selected">GoldenApple</option>
+				</select>
+			</div>
+			<div>
+				<p>Choose amount of time:</p>
+				<input id="timeSlider" class="slider" type="range" min="60" max="600" value="180" oninput="updateSlider(this.value, 'timeSliderNum')" />
+				<span id="timeSliderNum">180</span>
+			</div>
+			<div>
+				<p>Choose amount of ghosts:</p>
+				<input id="ghostSlider" class="slider" type="range" min="1" max="4" value="2" oninput="updateSlider(this.value, 'ghostSliderNum')" />
+				<span id="ghostSliderNum">2</span>
+			</div>
+			<button id="randomSettings" onclick="Random()">Random</button>
+			<button id="startGame" onclick="Start()">Start</button>
 		</div>
-		<div id="game">
-			<canvas id="canvas" height="600" width="600"></canvas>
+		<div id="gamePage">
+			<audio loop id="backgroundMusic">
+            	<source src="./assets/sound/backgroundMusic.mp3" type="audio/mpeg">
+        	</audio>
+			<div id="gameDetails" style="display: flex; flex-direction: row; place-items: buttom;">
+				<p>User Name</p>
+				<div id="score" style="padding-left: 20px; padding-top: 15px;">
+					<label for="lblScore">Score:</label>
+					<input id="lblScore" class="lbl" type="text" />
+				</div>
+				<div id="time" style="padding-left: 20px; padding-top: 15px;">
+					<label for="lblTime">Time:</label>
+					<input id="lblTime" class="lbl" type="text"/>
+				</div>
+				<div id="lifePoints" style="padding-left: 20px;">
+					<label for="lblLife">Life:</label>
+					<img id="lblLife1" src="./assets/img/pacLife.png" width="30px" height="30px"/>
+					<img id="lblLife2" src="./assets/img/pacLife.png" width="30px" height="30px"/>
+					<img id="lblLife3" src="./assets/img/pacLife.png" width="30px" height="30px"/>
+					<img id="lblLife4" src="./assets/img/pacLife.png" width="30px" height="30px"/>
+					<img id="lblLife5" src="./assets/img/pacLife.png" width="30px" height="30px"/>
+				</div>
+			</div>
+			<div id="gameView" style="display: flex; flex-direction: row;">
+				<div id="game">
+					<canvas id="canvas" height="600" width="900" style="background-color: black;"></canvas>
+					<img id="block" src="./assets/img/Block.jpg" style="display: none;">
+				</div>
+				<div style="padding-left: 20%;">
+					<label for="gameKeysFixed" class="settingFixedHeadline">Game Keys:</label>
+					<div id="gameKeysFixed" style="padding-left: 35%;">
+						<p id="UpFixed" style="font-size: 20px; background-color: darkgray;">Up Key: ArrowUp</p>
+						<p id="DownFixed" style="font-size: 20px; background-color: darkgray;">Down Key: ArrowDown</p> 
+						<p id="LeftFixed" style="font-size: 20px; background-color: darkgray;">Left Key: ArrowLeft</p>
+						<p id="RightFixed" style="font-size: 20px; background-color: darkgray;">Right Key: ArrowRight</p>
+						<p id="SummonFixed" style="font-size: 20px; background-color: darkgray;">Summon Key: P</p>
+						<p id="InivsFixed" style="font-size: 20px; background-color: darkgray;">Invisible Key: I</p>
+					</div>
+					<label for="foodAmountLeft" class="settingFixedHeadline">Amount of Food left:</label>
+					<p id="foodAmountLeft" style="font-size: 20px; text-align: center; background-color: darkgray; border-radius: 20px;">90</p>
+					<div>
+						<label for="5pointsFood"class="settingFixedHeadline" >5 Points Food:</label>
+						<img id="5pointsFood" src="./assets/img/Apple.png" width="60px" height="60px"/>
+					</div>
+					<div>
+						<label for="15pointsFood" class="settingFixedHeadline">15 Points Food:</label>
+						<img id="15pointsFood" src="./assets/img/Strawberry.png" width="60px" height="60px"/>
+					</div>
+					<div>
+						<label for="25pointsFood" class="settingFixedHeadline">25 Points Food:</label>
+						<img id="25pointsFood" src="./assets/img/GoldenApple.png" width="60px" height="60px"/>
+					</div>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>
