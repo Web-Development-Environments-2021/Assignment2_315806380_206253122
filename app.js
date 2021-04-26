@@ -1,14 +1,14 @@
 /*
 Content
 
-1. Welcome page - line
-	1.1 Login page - line
-	1.2 Signup page - line
-2. About Page - line 
-3. Settings Page - line
-4. Game Page - line
-	4.1 Game Board - line
-	4.2 Fixed settings - line
+1. Menu - line 15
+2. Welcome page - line 77
+	2.1 Login page - line 145
+	2.2 Signup page - line 154
+3. Settings Page - line 1004
+4. Game Page - line 252
+	4.1 Game Board - line 252
+	4.2 Fixed settings - line 1004
 */
 
 
@@ -26,14 +26,24 @@ $(document).ready(function() {
 function changeDiv(toShow) {
 	divs.forEach(element => {
 		if (element.id == toShow){
-			element.style.display = 'flex';
 			if (element.id == "welcomePage") {
 				document.getElementById('userExit').style.display = 'none';
+				element.style.display = 'flex';
+			} else if (element.id == "settingsPage") {
+				document.getElementById('newGame').style.display = 'none';
+				element.style.display = 'block';
+			} else {
+				document.getElementById('newGame').style.display = 'none';
+				element.style.display = 'flex';
 			}
+			
 		} else {
 			element.style.display = 'none';
 		}
 	});
+	let mute = document.getElementById('muteMusic');
+	mute.style.display = 'none';
+	mute.innerHTML = 'Mute';
 	resetGame();
 }
 
@@ -51,6 +61,17 @@ function openModal() {
 function closeModal(){
 	let diaglog = document.getElementById("modalDialog");
 	diaglog.close()
+}
+
+function muteGameMusic(){
+	let mute = document.getElementById('muteMusic');
+	if (mute.innerHTML == 'Mute') {
+		document.getElementById('backgroundMusic').pause();
+		mute.innerHTML = 'UnMute';
+	} else {
+		document.getElementById('backgroundMusic').play();
+		mute.innerHTML = 'Mute';
+	}
 }
 
 /* Welcome Page */
@@ -74,6 +95,8 @@ User.prototype.equals = function (o) {
 
 // Database for users
 let Users = [new User('k', 'k')]
+
+var loginUser;
 
 function includesIn(array, object) {
     let result = [false, undefined];
@@ -216,6 +239,7 @@ $(document).ready(function() {
       },
     },
     submitHandler: function (form) { 
+		loginUser = form.userLogin.value;
 		$('#loginPage').css('display', 'none');
 		$('#settingsPage').css('display', 'block');
 		$('#userExit').css('display', 'block');
@@ -245,7 +269,6 @@ var timeLimit = 180;
 var context;
 var board;
 var score = 0;
-var scoreToGet;
 var start_time;
 var time_elapsed;
 
@@ -268,6 +291,18 @@ class Pacman {
 }
 var pacman = new Pacman();
 
+// Ms Pacman
+
+class MsPacman {
+	constructor(){
+		this.x;
+		this.y;
+		this.caught = false;
+		this.prevuisMsPacman = 0;
+	}
+}
+
+var msPacman = new MsPacman();
 
 // Ghosts
 var ghostMovement = false;
@@ -364,8 +399,10 @@ function Start() {
 		return;
 	}
 
+	document.getElementById('userNameGame').innerHTML = loginUser;
 	document.getElementById("settingsPage").style.display = 'none';
 	document.getElementById("gamePage").style.display = 'block';
+	document.getElementById('muteMusic').style.display = 'block';
 	$('#backgroundMusic').trigger('play');
 
 	start_time = new Date();
@@ -378,6 +415,7 @@ function Start() {
 	initialFood();
 	initailPokeball();
 	initailPill();
+	initiailMspacman();
 
 	
 
@@ -433,7 +471,6 @@ function initailBoard(){
 
 function initailPacman(){
 	let emptyCell = findRandomEmptyCell(board);
-	pacman.prevuisPikachu = 0;
 	pacman.x = emptyCell[0];
 	pacman.y = emptyCell[1];
 	board[emptyCell[0]][emptyCell[1]] = 2;
@@ -473,7 +510,6 @@ function initialFood(){
 			pac_food[random]--;
 		}
 	}
-	scoreToGet = (foodAmount*0.6*5 + foodAmount*0.3*15 + foodAmount*0.1*25)*0.75
 }
 
 function initailPokeball(){
@@ -486,6 +522,13 @@ function initailPill(){
 		let emptyCell = findRandomEmptyCell(board);
 		board[emptyCell[0]][emptyCell[1]] = 3;
 	}
+}
+
+function initiailMspacman() {
+	let emptyCell = findRandomEmptyCell(board);
+	msPacman.x = emptyCell[0];
+	msPacman.y = emptyCell[1];
+	board[emptyCell[0]][emptyCell[1]] = 3.5;
 }
 
 
@@ -578,6 +621,12 @@ function Draw() {
 				let img = new Image();
 				img.src = ".//assets//img//pill.png";
 				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
+			} else if (board[i][j] == 3.5) {
+				context.beginPath();
+				context.fillRect(center.x - 30, center.y - 30, 30, 30);
+				let img = new Image();
+				img.src = ".//assets//img//msPacman.png";
+				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
 			}
 		}
 	}
@@ -601,6 +650,9 @@ function UpdatePosition() {
 	} else if (board[pacman.x][pacman.y] == 7) {
 		score += 25;
 		document.getElementById("foodAmountLeft").innerHTML -= 1;
+	} else if (board[pacman.x][pacman.y] == 3.5) {
+		score += 50;
+		msPacman.caught = true;
 	}
 	board[pacman.x][pacman.y] = 2;
 	// Ghosts movement
@@ -616,13 +668,16 @@ function UpdatePosition() {
 	if (pikachu.summoned){
 		UpdatePositionPi();
 	}
+	if (!msPacman.caught){
+		UpdatePositionMs();
+	}
 	document.getElementById("lblScore").value = score;
 	if ((timeLimit - time_elapsed) < 0){
-		gameLost();
-	} else if (score >= scoreToGet) {
-		window.clearInterval(interval);
-		window.clearInterval(intervalTime);
-		window.alert("Game completed");
+		if (score >= 100) {
+			gameLost('Winner!');
+		} else {
+			gameLost('timeoutLose');
+		}
 	} else {
 		Draw();
 	}
@@ -679,10 +734,9 @@ function checkEaten(x, y) {
 		let lifeImage = 'lblLife' + pacman.life;
 		document.getElementById(lifeImage).style.visibility = 'hidden';
 		pacman.life--;
-		window.alert("You got eaten !");
 		score -= 10;
 		if (pacman.life == 0){
-			gameLost();
+			gameLost('loser');
 		}
 		initailPacman();
 		keyPressed = 5;
@@ -706,14 +760,41 @@ function usePill() {
 	}
 }
 
-function gameLost() {
+function gameLost(type) {
 	window.clearInterval(interval);
 	window.clearInterval(intervalTime);
-	window.alert("You lost !");
+	if (type == 'loser') {
+		window.alert("Loser!");
+		$('#newGame').css('display', 'block');
+	} else if (type == 'timeoutLose') {
+		window.alert("You are better then" + score + "points!");
+		$('#newGame').css('display', 'block');
+	} else {
+		window.alert("Winner!!!");
+		$('#newGame').css('display', 'block');
+	}
+	resetGame();
+}
+
+// MsPacman Functions
+
+function UpdatePositionMs() {
+	if (msPacman.prevuisMsPacman){
+		board[msPacman.x][msPacman.y] = msPacman.prevuisMsPacman;
+	} else {
+		board[msPacman.x][msPacman.y] = 0;
+	}
+	randomMovement(msPacman);
+	if (board[msPacman.x][msPacman.y] < 10 && board[msPacman.x][msPacman.y] != 2){
+		msPacman.prevuisMsPacman = board[msPacman.x][msPacman.y];
+	} else {
+		msPacman.msPacman = undefined;
+	}
+	board[msPacman.x][msPacman.y] = 3.5;
 }
 
 // Pokemon Functions
-function UpdatePositionPi(toChase) {
+function UpdatePositionPi() {
 	if (pikachu.summoned) {
 		if (pikachu.prevuisPikachu){
 			board[pikachu.x][pikachu.y] = pikachu.prevuisPikachu;
@@ -809,7 +890,6 @@ function UpdatePositionG(index) {
 
 function checkEatenGhost(i, j, index) {
 	if (isGhost(pikachu.x,pikachu.y)) {
-		window.alert("Pikachu got a Ghost !");
 		ghosts[index].respawn();
 		return true;
 	}
@@ -910,6 +990,7 @@ function resetGame() {
 	// reset Objects
 	pacman = new Pacman();
 	pikachu = new Pikachu();
+	msPacman = new MsPacman();
 
 	// reset ghosts
 	ghostMovement = false;
@@ -991,6 +1072,40 @@ function foodCheck(){
 	document.getElementById('25pointsFood').src = "./assets/img/" + fruit25.value + ".png";
 	return true;
 }
+
+function randomSettings() {
+	fruit5 = document.getElementById("5points");
+	fruit15 = document.getElementById("15points");
+	fruit25 = document.getElementById("25points");
+
+	let fruits = ['Apple', 'GoldenApple', 'Strawberry'];
+	let fruitToRandom = fruit5;
+	for (let i=0; i<3; i++){
+		let rand = getRandomInt(0, i-1);
+		fruitToRandom.value = fruits.pop(rand);
+		if (i == 0){
+			fruitToRandom = fruit15;
+		} else {
+			fruitToRandom = fruit25;
+		}
+	}
+
+	document.getElementById('5pointsFood').src = "./assets/img/" + fruit5.value + ".png";
+	document.getElementById('15pointsFood').src = "./assets/img/" + fruit15.value + ".png";
+	document.getElementById('25pointsFood').src = "./assets/img/" + fruit25.value + ".png";
+
+	let foodSlider = document.getElementById('foodSlider');
+	foodSlider.value = getRandomInt(50, 90);
+	updateSlider(foodSlider.value, 'foodSliderNum');
+	let timeSlider = document.getElementById('timeSlider');
+	timeSlider.value = getRandomInt(60, 600);
+	updateSlider(timeSlider.value, 'timeSliderNum');
+	let ghostSlider = document.getElementById('ghostSlider');
+	ghostSlider.value = getRandomInt(1, 4);
+	updateSlider(ghostSlider.value, 'ghostSliderNum');
+}
+
+
 
 
 

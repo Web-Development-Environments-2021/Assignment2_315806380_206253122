@@ -17,6 +17,8 @@
 			<a onclick="changeDiv('rulesPage')">Rules</a>
 			<a onclick="openModal()">About</a>
 			<a id="userExit" onclick="changeDiv('welcomePage')" style="display: none;">Exit</a>
+			<a id="newGame" onclick="changeDiv('settingsPage')" style="display: none;">New Game</a>
+			<a id="muteMusic" onclick="muteGameMusic()" style="display: none; float: right;">Mute</a>
 		</header>
 		<dialog id="modalDialog"><button id="X" onclick="closeModal()">X</button>
 			<div class="dialog">
@@ -107,7 +109,7 @@
 				<input id="ghostSlider" class="slider" type="range" min="1" max="4" value="2" oninput="updateSlider(this.value, 'ghostSliderNum')" />
 				<span id="ghostSliderNum">2</span>
 			</div>
-			<button id="randomSettings" onclick="Random()">Random</button>
+			<button id="randomSettings" onclick="randomSettings()">Random</button>
 			<button id="startGame" onclick="Start()">Start</button>
 		</div>
 		<div id="gamePage">
@@ -115,7 +117,7 @@
             	<source src="./assets/sound/backgroundMusic.mp3" type="audio/mpeg">
         	</audio>
 			<div id="gameDetails" style="display: flex; flex-direction: row; place-items: buttom;">
-				<p>User Name</p>
+				<p id="userNameGame">User Name</p>
 				<div id="score" style="padding-left: 20px; padding-top: 15px;">
 					<label for="lblScore">Score:</label>
 					<input id="lblScore" class="lbl" type="text" />
@@ -138,29 +140,33 @@
 					<canvas id="canvas" height="600" width="900" style="background-color: black;"></canvas>
 					<img id="block" src="./assets/img/Block.jpg" style="display: none;">
 				</div>
-				<div style="padding-left: 20%;">
-					<label for="gameKeysFixed" class="settingFixedHeadline">Game Keys:</label>
-					<div id="gameKeysFixed" style="padding-left: 35%;">
-						<p id="UpFixed" style="font-size: 20px; background-color: darkgray;">Up Key: ArrowUp</p>
-						<p id="DownFixed" style="font-size: 20px; background-color: darkgray;">Down Key: ArrowDown</p> 
-						<p id="LeftFixed" style="font-size: 20px; background-color: darkgray;">Left Key: ArrowLeft</p>
-						<p id="RightFixed" style="font-size: 20px; background-color: darkgray;">Right Key: ArrowRight</p>
-						<p id="SummonFixed" style="font-size: 20px; background-color: darkgray;">Summon Key: P</p>
-						<p id="InivsFixed" style="font-size: 20px; background-color: darkgray;">Invisible Key: I</p>
-					</div>
-					<label for="foodAmountLeft" class="settingFixedHeadline">Amount of Food left:</label>
-					<p id="foodAmountLeft" style="font-size: 20px; text-align: center; background-color: darkgray; border-radius: 20px;">90</p>
+				<div id="gameSettingFixed">
 					<div>
-						<label for="5pointsFood"class="settingFixedHeadline" >5 Points Food:</label>
-						<img id="5pointsFood" src="./assets/img/Apple.png" width="60px" height="60px"/>
+						<label for="gameKeysFixed" class="settingFixedHeadline">Game Keys:</label>
+						<div id="gameKeysFixed" style="padding-left: 35%;">
+							<p id="UpFixed" class="pFixed">Up Key: ArrowUp</p>
+							<p id="DownFixed">Down Key: ArrowDown</p> 
+							<p id="LeftFixed">Left Key: ArrowLeft</p>
+							<p id="RightFixed">Right Key: ArrowRight</p>
+							<p id="SummonFixed">Summon Key: P</p>
+							<p id="InivsFixed">Invisible Key: I</p>
+						</div>
 					</div>
-					<div>
-						<label for="15pointsFood" class="settingFixedHeadline">15 Points Food:</label>
-						<img id="15pointsFood" src="./assets/img/Strawberry.png" width="60px" height="60px"/>
-					</div>
-					<div>
-						<label for="25pointsFood" class="settingFixedHeadline">25 Points Food:</label>
-						<img id="25pointsFood" src="./assets/img/GoldenApple.png" width="60px" height="60px"/>
+					<div style="padding-left: 50px;">
+						<label for="foodAmountLeft" class="settingFixedHeadline">Amount of Food left:</label>
+						<p id="foodAmountLeft">90</p>
+						<div>
+							<label for="5pointsFood"class="settingFixedHeadline" >5 Points Food:</label>
+							<img id="5pointsFood" src="./assets/img/Apple.png" width="60px" height="60px"/>
+						</div>
+						<div>
+							<label for="15pointsFood" class="settingFixedHeadline">15 Points Food:</label>
+							<img id="15pointsFood" src="./assets/img/Strawberry.png" width="60px" height="60px"/>
+						</div>
+						<div>
+							<label for="25pointsFood" class="settingFixedHeadline">25 Points Food:</label>
+							<img id="25pointsFood" src="./assets/img/GoldenApple.png" width="60px" height="60px"/>
+						</div>
 					</div>
 				</div>
 			</div>
