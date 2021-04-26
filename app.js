@@ -21,6 +21,7 @@ $(document).ready(function() {
 	divs.push(document.getElementById('signupPage'));
 	divs.push(document.getElementById('settingsPage'));
 	divs.push(document.getElementById('gamePage'));
+	divs.push(document.getElementById('rulesPage'));
 })
 
 function changeDiv(toShow) {
@@ -29,7 +30,7 @@ function changeDiv(toShow) {
 			if (element.id == "welcomePage") {
 				document.getElementById('userExit').style.display = 'none';
 				element.style.display = 'flex';
-			} else if (element.id == "settingsPage") {
+			} else if (element.id == "settingsPage" || element.id == "rulesPage") {
 				document.getElementById('newGame').style.display = 'none';
 				element.style.display = 'block';
 			} else {
@@ -48,19 +49,31 @@ function changeDiv(toShow) {
 }
 
 function openModal() { 
-	let diaglog = document.getElementById("modalDialog");
-	diaglog.showModal();
-	window.addEventListener('mouseup', function(e) {
-		if (e.target !== diaglog){
-			null;
-		} else {
-			diaglog.close();
-		}
-	});
+	let blur = document.getElementById('blur');
+    blur.classList.toggle('active');
+    let diaglog = document.getElementById("modalDialog");
+    diaglog.showModal();
+    window.addEventListener('mousedown', function(e) {
+        if (e.target !== diaglog){
+            null;
+        } 
+        else {
+            diaglog.close();
+            blur.classList.remove('active');
+        }
+    });
+    diaglog.addEventListener('keydown', function(e) {
+        if (e.code == 'Escape'){
+            let blur = document.getElementById('blur');
+            blur.classList.remove('active');
+        }
+    });
 }
 function closeModal(){
 	let diaglog = document.getElementById("modalDialog");
-	diaglog.close()
+    diaglog.close();
+    let blur = document.getElementById('blur');
+    blur.classList.remove('active');
 }
 
 function muteGameMusic(){
@@ -579,25 +592,25 @@ function Draw() {
 				context.beginPath();
 				let img = document.getElementById("block");
 				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
-			} else if (board[i][j] == 20) {
+			} else if (board[i][j] == 20 && isGhost(i, j)) {
 				context.beginPath();
 				context.fillRect(center.x - 30, center.y - 30, 30, 30);
 				let img = new Image();
 				img.src = ".//assets//img//ghost" + (board[i][j] - 19) + ".png";
 				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
-			} else if (board[i][j] == 21) {
+			} else if (board[i][j] == 21 && isGhost(i, j)) {
 				context.beginPath();
 				context.fillRect(center.x - 30, center.y - 30, 30, 30);
 				let img = new Image();
 				img.src = ".//assets//img//ghost" + (board[i][j] - 19) + ".png";
 				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
-			} else if (board[i][j] == 22) {
+			} else if (board[i][j] == 22 && isGhost(i, j)) {
 				context.beginPath();
 				context.fillRect(center.x - 30, center.y - 30, 30, 30);
 				let img = new Image();
 				img.src = ".//assets//img//ghost" + (board[i][j] - 19) + ".png";
 				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
-			} else if (board[i][j] == 23) {
+			} else if (board[i][j] == 23 && isGhost(i, j)) {
 				context.beginPath();
 				context.fillRect(center.x - 30, center.y - 30, 30, 30);
 				let img = new Image();
