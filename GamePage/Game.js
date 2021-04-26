@@ -49,11 +49,22 @@ var ghostMovement = false;
 
 class Ghost {
 	constructor(){
+		this.id;
 		this.starterX;
 		this.starterY;
 		this.x;
 		this.y;
 		this.prevuisGhost = 0;
+	}
+
+	respawn() {
+		if (this.prevuisGhost){
+			board[this.x][this.y] = this.prevuisGhost;
+		}
+		this.prevuisGhost = 0;
+		board[this.starterX][this.starterY] = 20 + this.id;
+		this.x = this.starterX;
+		this.y = this.starterY;
 	}
 }
 
@@ -111,6 +122,12 @@ function isWall(i, j) {
 var keyPressed = 5;
 var direction = [0.15, 1.85, 2, -10];
 
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 // Start game
 $(document).ready(function() {
 	context = canvas.getContext("2d");
@@ -160,7 +177,7 @@ function Start() {
 			keyPressed = 5;
 		}
 	});
-	interval = setInterval(UpdatePosition, 250);
+	interval = setInterval(UpdatePosition, 200);
 	intervalTime = setInterval(updateTime, 50);
 }
 
@@ -203,6 +220,7 @@ function initialGhosts(){
 	let y = 1;
 	for (let i=0; i<ghostsAmount; i++){
 		ghosts.push(new Ghost());
+		ghosts[i].id = i;
 		ghosts[i].x = x;
 		ghosts[i].y = y;
 		ghosts[i].starterX = x;
@@ -224,7 +242,7 @@ function initialFood(){
 	let pac_food = [foodAmount*0.6, foodAmount*0.3, foodAmount*0.1];
 	while (pac_food.reduce((a, b) => a + b) > 0) {
 		let emptyCell = findRandomEmptyCell(board);
-		let random = Math.floor(Math.random(4) * 10);
+		let random = getRandomInt(0, 3);
 		if (pac_food[random] > 0){
 			board[emptyCell[0]][emptyCell[1]] = 5 + random;
 			pac_food[random]--;
@@ -371,7 +389,6 @@ function UpdatePosition() {
 	} else {
 		ghostMovement = true;
 	}
-
 	// Pikachu movement
 	if (pikachu.summoned){
 		UpdatePositionPi();
@@ -473,7 +490,7 @@ function gameLost() {
 }
 
 // Pokemon Functions
-function UpdatePositionPi() {
+function UpdatePositionPi(toChase) {
 	if (pikachu.summoned) {
 		if (pikachu.prevuisPikachu){
 			board[pikachu.x][pikachu.y] = pikachu.prevuisPikachu;
@@ -485,7 +502,9 @@ function UpdatePositionPi() {
 			initailPokeball();
 			return;
 		}
-		randomMovement(pikachu);
+		let random = getRandomInt(0, ghosts.length - 1);
+		console.log(random);
+		smartMovementPi(ghosts[random], random);
 		if (board[pikachu.x][pikachu.y] < 10 && board[pikachu.x][pikachu.y] != 2){
 			pikachu.prevuisPikachu = board[pikachu.x][pikachu.y];
 		} else {
@@ -493,6 +512,39 @@ function UpdatePositionPi() {
 		}
 		board[pikachu.x][pikachu.y] = 15;
 	}
+}
+
+function smartMovementPi(object, index) {
+	if (Math.abs(pikachu.x - object.x) > Math.abs(pikachu.y - object.y)){
+		if (pikachu.x - object.x > 0){
+			if (!isWall(pikachu.x-1, pikachu.y)){
+				pikachu.x--;
+			} else {
+				randomMovement(pikachu, index, true);
+			}
+		} else {
+			if (!isWall(pikachu.x+1, pikachu.y)){
+				pikachu.x++;
+			} else {
+				randomMovement(pikachu, index, true);
+			}
+		}
+	} else {
+		if (pikachu.y - object.y > 0){
+			if (!isWall(pikachu.x, pikachu.y-1)){
+				pikachu.y--;
+			} else {
+				randomMovement(pikachu, index, true);
+			}
+		} else {
+			if (!isWall(pikachu.x, pikachu.y+1)){
+				pikachu.y++;
+			} else {
+				randomMovement(pikachu, index, true);
+			}
+		}
+	}
+	checkEatenGhost(pikachu.x, pikachu.y, index);
 }
 
 function gotPokeball() {
@@ -520,7 +572,7 @@ function UpdatePositionG(index) {
 		board[ghosts[index].x][ghosts[index].y] = 0;
 	}
 	if (!pacman.invis){
-		smartMovement(ghosts[index], index);
+		smartMovement(ghosts[index], pacman, index);
 	} else {
 		randomMovement(ghosts[index], index);
 	}
@@ -533,45 +585,42 @@ function UpdatePositionG(index) {
 }
 
 function checkEatenGhost(i, j, index) {
-	if (isGhost(pikachu.x + i,pikachu.y + j) || isGhost(pikachu.x,pikachu.y)) {
+	if (isGhost(pikachu.x,pikachu.y)) {
 		window.alert("Pikachu got a Ghost !");
-		ghosts[index].x = ghosts[index].starterX;
-		ghosts[index].y = ghosts[index].starterY;
-		ghosts[index].prevuisGhost = 0;
-		board[ghosts[index].starterX][ghosts[index].starterY] = 20 + index;
+		ghosts[index].respawn();
 		return true;
 	}
 	return false;
 }
 
 // temp function until dolev will add the search algo
-function smartMovement(object, index) {
-	if (Math.abs(object.x - pacman.x) > Math.abs(object.y - pacman.y)){
-		if (object.x - pacman.x > 0){
-			if (!isWall(object.x-1, object.y)){
-				object.x--;
+function smartMovement(objectA, objectB, index) {
+	if (Math.abs(objectA.x - objectB.x) > Math.abs(objectA.y - objectB.y)){
+		if (objectA.x - objectB.x > 0){
+			if (!isWall(objectA.x-1, objectA.y) && !isGhost(objectA.x-1, objectA.y)){
+				objectA.x--;
 			} else {
-				randomMovement(object, index);
+				randomMovement(objectA, index);
 			}
 		} else {
-			if (!isWall(object.x+1, object.y)){
-				object.x++;
+			if (!isWall(objectA.x+1, objectA.y) && !isGhost(objectA.x+1, objectA.y)){
+				objectA.x++;
 			} else {
-				randomMovement(object, index);
+				randomMovement(objectA, index);
 			}
 		}
 	} else {
-		if (object.y - pacman.y > 0){
-			if (!isWall(object.x, object.y-1)){
-				object.y--;
+		if (objectA.y - objectB.y > 0){
+			if (!isWall(objectA.x, objectA.y-1) && !isGhost(objectA.x, objectA.y-1)){
+				objectA.y--;
 			} else {
-				randomMovement(object, index);
+				randomMovement(objectA, index);
 			}
 		} else {
-			if (!isWall(object.x, object.y+1)){
-				object.y++;
+			if (!isWall(objectA.x, objectA.y+1) && !isGhost(objectA.x, objectA.y+1)){
+				objectA.y++;
 			} else {
-				randomMovement(object, index);
+				randomMovement(objectA, index);
 			}
 		}
 	}
@@ -591,7 +640,7 @@ function randomMovement(object, index, P) {
 				movmentDone = true;
 			}
 		}
-		if (random == 1) {
+		else if (random == 1) {
 			if (!isWall(object.x, object.y + 1) && !isGhost(object.x, object.y + 1)) {
 				if (!checkEatenGhost(0, 1, index)){
 					object.y++;
@@ -601,7 +650,7 @@ function randomMovement(object, index, P) {
 				movmentDone = true;
 			}
 		}
-		if (random == 2) {
+		else if (random == 2) {
 			if (!isWall(object.x - 1, object.y) && !isGhost(object.x - 1, object.y)) {
 				if (!checkEatenGhost(-1, 0, index)){
 					object.x--;
@@ -611,7 +660,7 @@ function randomMovement(object, index, P) {
 				movmentDone = true;
 			}
 		}
-		if (random == 3) {
+		else if (random == 3) {
 			if (!isWall(object.x + 1, object.y) && !isGhost(object.x + 1, object.y)) {
 				if (!checkEatenGhost(1, 0, index)){
 					object.x++;
@@ -621,6 +670,7 @@ function randomMovement(object, index, P) {
 				movmentDone = true;
 			}
 		}
+		movmentDone = true;
 	}	
 }
 
