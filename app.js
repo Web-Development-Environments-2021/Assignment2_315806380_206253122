@@ -906,6 +906,7 @@ function UpdatePositionG(index) {
 
 function checkEatenGhost(i, j, index) {
 	if (isGhost(pikachu.x,pikachu.y)) {
+		score += 20;
 		ghosts[index].respawn();
 		return true;
 	}
