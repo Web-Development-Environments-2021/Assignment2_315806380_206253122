@@ -2,13 +2,16 @@
 Content
 
 1. Menu - line 15
-2. Welcome page - line 77
-	2.1 Login page - line 145
-	2.2 Signup page - line 154
-3. Settings Page - line 1004
-4. Game Page - line 252
+2. Welcome page - line 90
+	2.1 Validation - line 158
+	2.2 Signup page - line 167
+3. Settings Page - line 1020
+4. Game Page - line 268
 	4.1 Game Board - line 252
-	4.2 Fixed settings - line 1004
+	4.3 Pacman Functions - line 651
+	4.3 Ms Pacman Functions - line 795
+	4.5 Pikachu Functions - line 812
+	4.6 Ghosts Function - line 887
 */
 
 
@@ -181,7 +184,7 @@ $(document).ready(function() {
 // Validation for Signup and Login
 
 jQuery.validator.addMethod("lettersonly", function(value, element) {
-	return this.optional(element) || /^[a-z]+$/i.test(value);
+	return this.optional(element) || /^[a-z ]+$/i.test(value);
 }, "Letters only please");
 
 jQuery.validator.addMethod("lettersAndNubersOnly", function(value, element) {
@@ -270,7 +273,7 @@ var downKey = "ArrowDown";
 var leftKey = "ArrowLeft";
 var rightKey = "ArrowRight";
 var summonKey = "KeyP";
-var pillKey = "KeyI";
+var InvisKey = "KeyI";
 var foodAmount;
 var fruit5 = "";
 var fruit15 = "";
@@ -447,7 +450,7 @@ function Start() {
 			direction = [0.15, 1.85, 2, -10];
 		} else if (e.code === summonKey) {
 			summonPikachu();
-		} else if (e.code === pillKey) {
+		} else if (e.code === InvisKey) {
 			usePill();
 		}else {
 			keyPressed = 5;
@@ -634,7 +637,7 @@ function Draw() {
 				let img = new Image();
 				img.src = ".//assets//img//pill.png";
 				context.drawImage(img, center.x - 30, center.y - 30, 30, 30)
-			} else if (board[i][j] == 3.5) {
+			} else if (board[i][j] == 3.5 && (msPacman.x == i && msPacman.y == j)) {
 				context.beginPath();
 				context.fillRect(center.x - 30, center.y - 30, 30, 30);
 				let img = new Image();
@@ -780,7 +783,7 @@ function gameLost(type) {
 		window.alert("Loser!");
 		$('#newGame').css('display', 'block');
 	} else if (type == 'timeoutLose') {
-		window.alert("You are better then" + score + "points!");
+		window.alert("You are better then " + score + " points!");
 		$('#newGame').css('display', 'block');
 	} else {
 		window.alert("Winner!!!");
