@@ -1,6 +1,6 @@
 /* For all pages */
 body {
-	background-image: url('./assets/img/pacmanBackground.jpg');
+	  background-image: url('./assets/img/pacmanBackground.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     font-style: oblique;
@@ -9,20 +9,20 @@ body {
 }
 
 footer {
-  display: flex;
-  flex-direction: row;
-  place-content: center;
-  position: fixed;
-  bottom: 0;
-  width: 100%; 
-  height: 40px;
-  background: radial-gradient(darkgray, transparent);
-  color: black;
-  z-index: 10;
+    display: flex;
+    flex-direction: row;
+    place-content: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%; 
+    height: 40px;
+    background: radial-gradient(darkgray, transparent);
+    color: black;
+    z-index: 10;
 }
 
 #blur {
-  margin-bottom: 75px;
+    margin-bottom: 75px;
 }
 
 .inputers {
@@ -31,7 +31,7 @@ footer {
 }
 
 .submitInput1 {
-	width: 50%;
+	  width: 50%;
     margin: 8px 0;
     display: inline-block;
     border: 1px solid #ccc;
