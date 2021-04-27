@@ -823,7 +823,6 @@ function UpdatePositionPi() {
 			return;
 		}
 		let random = getRandomInt(0, ghosts.length - 1);
-		console.log(random);
 		smartMovementPi(ghosts[random], random);
 		if (board[pikachu.x][pikachu.y] < 10 && board[pikachu.x][pikachu.y] != 2){
 			pikachu.prevuisPikachu = board[pikachu.x][pikachu.y];
@@ -904,7 +903,7 @@ function UpdatePositionG(index) {
 	board[ghosts[index].x][ghosts[index].y] = 20 + index;
 }
 
-function checkEatenGhost(i, j, index) {
+function checkEatenGhost(index) {
 	if (isGhost(pikachu.x,pikachu.y)) {
 		score += 20;
 		ghosts[index].respawn();
